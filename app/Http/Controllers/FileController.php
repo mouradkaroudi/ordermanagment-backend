@@ -1,0 +1,88 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\File;
+use Illuminate\Http\Request;
+
+class FileController extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index()
+    {
+        //
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request)
+    {
+        $this->validate($request, [
+            'file' => 'mimes:png,jpg,jpeg,webp|max:2048'
+        ]);
+
+        $file = $request->file('file');
+        $name = $file->getClientOriginalName();
+        $path = $file->storePublicly('public');
+        $mime_type = $file->getClientMimeType();
+
+        $path = str_replace('public/', 'storage/', $path);
+
+        if(!$path) {
+            return response()->json([
+                "Unexpcted error during upload procces. please try again"
+            ],400);
+        }
+
+        $file = File::create([
+            "mime_type" => $mime_type,
+            "path" => $path,
+            "original_name" => $name
+        ]);
+
+        return $file;
+
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  \App\Models\File  $file
+     * @return \Illuminate\Http\Response
+     */
+    public function show(File $file)
+    {
+        return response()->json($file);
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Models\File  $file
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, File $file)
+    {
+        //
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  \App\Models\File  $file
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy(File $file)
+    {
+        //
+    }
+}
