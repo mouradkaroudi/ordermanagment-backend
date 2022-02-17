@@ -3,7 +3,9 @@
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\LocationController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\SupplierController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -29,4 +31,6 @@ Route::apiResources([
     'categories' => CategoryController::class,
     'products' => ProductController::class,
     'files' => FileController::class,
+    'orders' => OrderController::class,
+    'purchases' => PurchaseController::class
 ]);

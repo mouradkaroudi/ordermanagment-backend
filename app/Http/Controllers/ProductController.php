@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ProductRequest;
 use App\Http\Resources\ProductCollection;
 use App\Models\Product;
 use Illuminate\Http\Request;
@@ -15,6 +16,13 @@ class ProductController extends Controller
      */
     public function index()
     {
+
+        $request = request()->input();
+        if(!empty($request)) {
+            $ref = $request['ref'];
+            return Product::where('ref', $ref)->first();
+        }
+
         return (new ProductCollection(Product::latest()->paginate()));
     }
 
@@ -24,34 +32,20 @@ class ProductController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(ProductRequest $request)
     {
-        $request->validate([
-            'ref' => ['required'],
-            'name' => ['required'],
-            'sku' => ['required'],
-            'mainRef' => ['required'],
-            'supplier_id' => ['required'],
-            'location_id' => ['required'],
-            'category_id' => ['required'],
-            'cost' => ['required'],
-            'is_paid' => ['required'],
-        ]);
+        // Return the valided fields only
+        $fields = $request->validated();
+        
+        $product = Product::create($fields);
+        
+        if($product) {
+            return response()->json($product);
+        }
 
-        $product = Product::create([
-            'ref' => $request->input('ref'),
-            'name' => $request->input('name'),
-            'image_id' => $request->input('image_id'),
-            'sku' => $request->input('sku'),
-            'mainRef' => $request->input('mainRef'),
-            'supplier_id' => $request->input('supplier_id'),
-            'location_id' => $request->input('location_id'),
-            'category_id' => $request->input('category_id'),
-            'cost' => $request->input('cost'),
-            'is_paid' => $request->input('is_paid'),
-        ]);
-
-        return response()->json($product);
+        return response()->json([
+            'message' => 'Something went wrong.'
+        ], 400);
     }
 
     /**
@@ -62,7 +56,8 @@ class ProductController extends Controller
      */
     public function show(Product $product)
     {
-        //
+        
+        return response()->json($product);
     }
 
     /**
@@ -72,9 +67,19 @@ class ProductController extends Controller
      * @param  \App\Models\Product  $product
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Product $product)
+    public function update(ProductRequest $request, Product $product)
     {
-        //
+
+        $fields = $request->validated();
+
+        if($product->update($fields)) {
+            return response('', 200);
+        }
+
+        return response()->json([
+            'message' => 'Something went wrong.'
+        ], 400);
+
     }
 
     /**

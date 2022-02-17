@@ -19,9 +19,9 @@ return new class extends Migration
             $table->string('name');
             $table->integer('image_id')->nullable();
             $table->string('sku');
-            $table->string('mainRef');
-            $table->integer('supplier_id');
-            $table->integer('location_id');
+            $table->string('mainRef')->nullable();
+            $table->integer('supplier_id')->nullable();
+            $table->integer('location_id')->nullable();
             $table->integer('category_id');
             $table->float('cost');
             $table->boolean('is_paid')->default(false);
