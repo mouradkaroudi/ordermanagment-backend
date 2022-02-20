@@ -33,7 +33,7 @@ class OrderController extends Controller
         $fields = $request->validated();
 
         // Client enter orders by ref
-        // We need to assign each ref to a product id
+        // We need to assign each ref a product id
         $orders = $fields['orders'];
 
         $query_orders = Product::whereIn('ref', array_map(function($a) { return $a['ref']; }, $orders))->get();
@@ -43,18 +43,6 @@ class OrderController extends Controller
         foreach( $query_orders as $query_order ) {
             $map_orders_by_ref[$query_order['ref']] = $query_order;
         }
-
-        /*
-        [[
-            'ref' => 'h-10000', // change ref by id
-            'quantity' => 4
-        ]]
-
-        [[
-            'product_id' => 1,
-            'quantity' => 4
-         ]]
-        */
             
         foreach( $orders as $key=>$order ) {
             $orders[$key]['product_id'] = $map_orders_by_ref[$order['ref']]['id'];
@@ -70,6 +58,7 @@ class OrderController extends Controller
         $merge_with_today = $request->input('merge_with_today', true);
 
         if($merge_with_today) {
+            // We merge only the orders that have status null
             $today_orders = Order::whereRaw('date(created_at) = curdate() && status is null')->get(['id', 'product_id', 'quantity'])->toArray();
             $today_orders_products = array_map(function( $array ) {
                 return $array['product_id'];
@@ -155,7 +144,7 @@ class OrderController extends Controller
      */
     public function show(Order $order)
     {
-        //
+        return new OrderResource($order::with('product', 'purchase_order')->first());
     }
 
     /**

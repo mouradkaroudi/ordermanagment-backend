@@ -14,11 +14,18 @@ class ProductResource extends JsonResource
      */
     public function toArray($request)
     {
+
+        $image = null;
+
+        if($this->image) {
+            $image = $this->image->storage_type == 'local' ? asset($this->image->resource) : $this->image->resource;
+        }
+
         return [
             'id' => $this->id,
             'ref' => $this->ref,
             'name' => $this->name,
-            'image_url' =>  $this->image ? asset($this->image->path) : null,
+            'image_url' => $image,
             'sku' => $this->sku,
             'mainRef' => $this->mainRef,
             'cost' => $this->cost,

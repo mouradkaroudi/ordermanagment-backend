@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\FileController;
+use App\Http\Controllers\ImportProductsController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
@@ -32,5 +33,6 @@ Route::apiResources([
     'products' => ProductController::class,
     'files' => FileController::class,
     'orders' => OrderController::class,
-    'purchases' => PurchaseController::class
+    'purchases' => PurchaseController::class,
+    'import-products' => ImportProductsController::class
 ]);

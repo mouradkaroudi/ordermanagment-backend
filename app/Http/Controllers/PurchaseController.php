@@ -70,7 +70,7 @@ class PurchaseController extends Controller
         $purchase->orders()->createMany($purchase_orders);
 
         $order = new Order();
-        $order->whereIn('id', $orders_ids)->whereRaw('status is null')->update(['status' => 'sent_pruchase']);
+        $order->whereIn('id', $orders_ids)->whereRaw('status is null')->update(['status' => 'sent_purchase']);
 
         return response()->json($purchase);
 

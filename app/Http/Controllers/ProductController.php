@@ -4,8 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ProductRequest;
 use App\Http\Resources\ProductCollection;
+use App\Imports\ProductsImport;
+use App\Models\File;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ProductController extends Controller
 {
@@ -17,13 +20,9 @@ class ProductController extends Controller
     public function index()
     {
 
-        $request = request()->input();
-        if(!empty($request)) {
-            $ref = $request['ref'];
-            return Product::where('ref', $ref)->first();
-        }
+        $request = request()->all();
 
-        return (new ProductCollection(Product::latest()->paginate()));
+        return (new ProductCollection(Product::filter($request)->latest()->paginate(50)));
     }
 
     /**
@@ -37,6 +36,27 @@ class ProductController extends Controller
         // Return the valided fields only
         $fields = $request->validated();
         
+        $file_id = $fields['file_id'];
+
+        if($file_id) {
+            $file = File::where('id', $file_id)->first();
+            $file_path = $file['resource'];
+
+            try {
+                Excel::import(new ProductsImport, $file_path);
+
+                return response()->json([
+                    'message' => 'Products imported successfully.'
+                ], 200);        
+                
+            } catch (\Throwable $th) {
+                return response()->json([
+                    'message' => 'Something went wrong.'
+                ], 400);        
+            }
+
+        }
+
         $product = Product::create($fields);
         
         if($product) {

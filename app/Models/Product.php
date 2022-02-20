@@ -15,7 +15,7 @@ class Product extends Model
      * @var array
      */
     protected $fillable = [
-        'ref', 
+        'ref',
         'name',
         'image_id',
         'sku',
@@ -27,21 +27,30 @@ class Product extends Model
         'is_paid',
     ];
 
-    public function supplier() {
+    public function supplier()
+    {
         return $this->hasOne(Supplier::class, 'id', 'supplier_id');
     }
 
-    public function location() {
+    public function location()
+    {
         return $this->hasOne(Location::class, 'id', 'location_id');
     }
 
-    public function category() {
+    public function category()
+    {
         return $this->hasOne(Category::class, 'id', 'category_id');
     }
 
-    public function image() {
+    public function image()
+    {
         return $this->hasOne(File::class, 'id', 'image_id');
     }
 
-
+    public function scopeFilter($query, $filters)
+    {
+        if (isset($filters['ref'])) {
+            $query->where('ref', '=', $filters['ref']);
+        }
+    }
 }

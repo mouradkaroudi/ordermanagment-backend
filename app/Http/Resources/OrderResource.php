@@ -20,11 +20,16 @@ class OrderResource extends JsonResource
     {
 
         $delegate = null;
+        $product_image_url = null;
 
         if($this->purchase_order) {
             $delegate = User::where('id', $this->purchase_order->delegate_id)->first(['id', 'name']);
         }
-        
+
+
+        if($this->product->image) {
+            $product_image_url = $this->product->image->storage_type == 'local' ? asset($this->product->image->resource) : $this->product->image->resource;
+        }
 
         return [
             'id' => $this->id,
@@ -35,10 +40,12 @@ class OrderResource extends JsonResource
                 'id' => $this->product->name,
                 'name' => $this->product->name,
                 'ref' => $this->product->ref,
-                'location' => $this->product->location_id ? Location::where('id', $this->product->location_id)->first(['id', 'name']) : null
-                //'image_url' => $this->product->image ? asset($this->image->path) : null,
+                'location' => $this->product->location_id ? Location::where('id', $this->product->location_id)->first(['id', 'name']) : null,
+                'image_url' => $product_image_url,
             ],
             'delegate' => $delegate,
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at
         ];
     }
 }

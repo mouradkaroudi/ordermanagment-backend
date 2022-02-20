@@ -25,6 +25,14 @@ class ProductRequest extends FormRequest
     public function rules()
     {
 
+        $file_id = request()->input('file_id');
+
+        if($file_id) {
+            return [
+                'file_id' => ['required', 'exists:App\Models\File,id'],
+            ];
+        }
+
         $refRules = ['required'];
         $skuRules = ['required'];
         

@@ -26,13 +26,12 @@ class FileController extends Controller
     public function store(Request $request)
     {
         $this->validate($request, [
-            'file' => 'mimes:png,jpg,jpeg,webp|max:2048'
+            'file' => 'mimes:png,jpg,jpeg,webp,excel,xlsx|max:2048'
         ]);
 
         $file = $request->file('file');
         $name = $file->getClientOriginalName();
         $path = $file->storePublicly('public');
-        $mime_type = $file->getClientMimeType();
 
         $path = str_replace('public/', 'storage/', $path);
 
@@ -43,9 +42,9 @@ class FileController extends Controller
         }
 
         $file = File::create([
-            "mime_type" => $mime_type,
-            "path" => $path,
-            "original_name" => $name
+            "storage_type" => "local",
+            "resource" => $path,
+            "display_name" => $name
         ]);
 
         return $file;

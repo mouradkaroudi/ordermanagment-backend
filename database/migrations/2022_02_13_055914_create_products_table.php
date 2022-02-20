@@ -15,14 +15,14 @@ return new class extends Migration
     {
         Schema::create('products', function (Blueprint $table) {
             $table->id();
-            $table->string('ref');
+            $table->string('ref')->unique();
             $table->string('name');
             $table->integer('image_id')->nullable();
-            $table->string('sku');
+            $table->string('sku')->unique();
             $table->string('mainRef')->nullable();
             $table->integer('supplier_id')->nullable();
             $table->integer('location_id')->nullable();
-            $table->integer('category_id');
+            $table->integer('category_id')->nullable();
             $table->float('cost');
             $table->boolean('is_paid')->default(false);
             $table->timestamps();

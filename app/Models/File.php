@@ -14,5 +14,5 @@ class File extends Model
      *
      * @var array
      */
-    protected $fillable = ['mime_type', 'path', 'original_name'];
+    protected $fillable = ['storage_type', 'resource', 'display_name'];
 }

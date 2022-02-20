@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->bigInteger('product_id');
             $table->integer('quantity');
-            $table->enum('status', ['sent_pruchase', 'pruchased', 'issue'])->nullable();
+            $table->enum('status', ['sent_purchase', 'purchased', 'issue'])->nullable();
             $table->timestamps();
         });
 
