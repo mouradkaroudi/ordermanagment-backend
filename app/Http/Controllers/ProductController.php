@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ProductRequest;
 use App\Http\Resources\ProductCollection;
+use App\Http\Resources\ProductResource;
 use App\Imports\ProductsImport;
 use App\Models\File;
 use App\Models\Product;
@@ -77,7 +78,7 @@ class ProductController extends Controller
     public function show(Product $product)
     {
         
-        return response()->json($product);
+        return new ProductResource($product);
     }
 
     /**

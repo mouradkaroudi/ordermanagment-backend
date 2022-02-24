@@ -50,9 +50,9 @@ class ProductRequest extends FormRequest
             'sku' => $skuRules,
             'image_id' => ['sometimes', 'exists:App\Models\File,id'],
             //'mainRef' => ['required'],
-            'supplier_id' => ['required', 'exists:App\Models\Supplier,id'],
-            'location_id' => ['required', 'exists:App\Models\Location,id'],
-            'category_id' => ['required', 'exists:App\Models\Category,id'],
+            'supplier_id' => ['sometimes', 'exists:App\Models\Supplier,id'],
+            'location_id' => ['sometimes', 'exists:App\Models\Location,id'],
+            'category_id' => ['sometimes', 'exists:App\Models\Category,id'],
             'cost' => ['required', 'numeric', 'gt:0'],
             'is_paid' => ['sometimes', 'bool']
         ];
