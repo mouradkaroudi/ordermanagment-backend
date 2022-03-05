@@ -26,6 +26,7 @@ return new class extends Migration
             $table->float('cost');
             $table->boolean('is_paid')->default(false);
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

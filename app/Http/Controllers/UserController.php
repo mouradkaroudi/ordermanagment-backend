@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\UserRequest;
 use App\Http\Resources\UserCollection;
+use App\Http\Resources\UserResource;
 use App\Models\User;
 use App\Models\Usermeta;
 use Illuminate\Http\Request;
@@ -18,7 +19,9 @@ class UserController extends Controller
      */
     public function index()
     {
-        return (new UserCollection(User::latest()->paginate()));
+        $request = request()->all();
+
+        return (new UserCollection(User::filter($request)->latest()->paginate()));
     }
 
     /**
@@ -65,7 +68,7 @@ class UserController extends Controller
      */
     public function show(User $user)
     {
-        //
+        return new UserResource($user);
     }
 
     /**
@@ -77,7 +80,27 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user)
     {
-        //
+        $fields = $request->validated();
+
+        $abilities = $fields['abilities'];
+
+        $update = $user->update([
+            'name' => $fields['name'],
+            'username' => $fields['username'],
+            'email' => $fields['email'],
+            'role' => $fields['role'],
+            'password' => Hash::make($fields['password'])
+        ]);
+
+        if($update) {
+            // TODO: check if there is changes in abilities
+            return response('', 200);
+        }
+        
+        return response()->json([
+            'message' => 'Something went wrong.'
+        ], 400);
+
     }
 
     /**

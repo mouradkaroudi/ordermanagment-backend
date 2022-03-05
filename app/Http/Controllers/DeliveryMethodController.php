@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\CategoryCollection;
-use App\Http\Resources\CategoryResource;
-use App\Models\Category;
+use App\Http\Resources\DeliveryMethodCollection;
+use App\Http\Resources\DeliveryMethodResource;
+use App\Models\DeliveryMethod;
 use Illuminate\Http\Request;
 
-class CategoryController extends Controller
+class DeliveryMethodController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -16,7 +16,7 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        return (new CategoryCollection(Category::latest()->paginate()));
+        return (new DeliveryMethodCollection(DeliveryMethod::latest()->paginate()));
     }
 
     /**
@@ -29,48 +29,56 @@ class CategoryController extends Controller
     {
         $request->validate([
             'name' => ['required'],
-            'commission' => ['required'],
+            'commission' => ['required', 'numeric'],
+            'min' => ['required', 'numeric'],
+            'max' => ['required', 'numeric'],
         ]);
 
-        $category = Category::create([
+        $deliveryMethod = DeliveryMethod::create([
             'name' => $request->input('name'),
             'commission' => $request->input('commission'),
+            'min' => $request->input('min'),
+            'max' => $request->input('max')
         ]);
 
-        return response()->json($category);
+        return response()->json($deliveryMethod);
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Category  $category
+     * @param  \App\Models\DeliveryMethod  $deliveryMethod
      * @return \Illuminate\Http\Response
      */
-    public function show(Category $category)
+    public function show(DeliveryMethod $deliveryMethod)
     {
-        return new CategoryResource($category);
+        return new DeliveryMethodResource($deliveryMethod);
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Category  $category
+     * @param  \App\Models\DeliveryMethod  $deliveryMethod
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Category $category)
+    public function update(Request $request, DeliveryMethod $deliveryMethod)
     {
         $request->validate([
             'name' => ['required'],
-            'commission' => ['required'],
+            'commission' => ['required', 'numeric'],
+            'min' => ['required', 'numeric'],
+            'max' => ['required', 'numeric'],
         ]);
 
         $fields = [
             'name' => $request->input('name'),
             'commission' => $request->input('commission'),
+            'min' => $request->input('min'),
+            'max' => $request->input('max')
         ];
 
-        if ($category->update($fields)) {
+        if ($deliveryMethod->update($fields)) {
             return response('', 200);
         }
 
@@ -82,12 +90,12 @@ class CategoryController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Category  $category
+     * @param  \App\Models\DeliveryMethod  $deliveryMethod
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Category $category)
+    public function destroy(DeliveryMethod $deliveryMethod)
     {
-        if ($category->delete()) {
+        if ($deliveryMethod->delete()) {
             return response('', 200);
         } else {
             return response()->json([

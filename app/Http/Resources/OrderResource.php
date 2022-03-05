@@ -21,11 +21,9 @@ class OrderResource extends JsonResource
 
         $delegate = null;
         $product_image_url = null;
-
         if($this->purchase_order) {
             $delegate = User::where('id', $this->purchase_order->delegate_id)->first(['id', 'name']);
         }
-
 
         if($this->product->image) {
             $product_image_url = $this->product->image->storage_type == 'local' ? asset($this->product->image->resource) : $this->product->image->resource;

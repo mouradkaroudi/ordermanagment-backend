@@ -37,7 +37,8 @@ class ProductController extends Controller
         // Return the valided fields only
         $fields = $request->validated();
         
-        $file_id = $fields['file_id'];
+        // TODO : Move this to another controller
+        $file_id = isset($fields['file_id']) ? $fields['file_id']: false;
 
         if($file_id) {
             $file = File::where('id', $file_id)->first();
@@ -111,6 +112,12 @@ class ProductController extends Controller
      */
     public function destroy(Product $product)
     {
-        //
+        if($product->delete()) {
+            return response('', 200);
+        }else{
+            return response()->json([
+                'message' => 'Something went wrong.'
+            ], 400);    
+        }
     }
 }

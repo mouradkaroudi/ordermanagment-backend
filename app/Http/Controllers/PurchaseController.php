@@ -69,6 +69,7 @@ class PurchaseController extends Controller
 
         $purchase->orders()->createMany($purchase_orders);
 
+        // Update order status
         $order = new Order();
         $order->whereIn('id', $orders_ids)->whereRaw('status is null')->update(['status' => 'sent_purchase']);
 

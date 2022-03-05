@@ -18,7 +18,9 @@ class OrderController extends Controller
      */
     public function index()
     {
-        return OrderResource::collection(Order::with('product', 'purchase_order')->latest()->paginate());
+        $request = request()->all();
+
+        return OrderResource::collection(Order::filter($request)->with('product', 'purchase_order')->latest()->orderBy('id', 'desc')->paginate());
     }
 
     /**
@@ -36,15 +38,17 @@ class OrderController extends Controller
         // We need to assign each ref a product id
         $orders = $fields['orders'];
 
-        $query_orders = Product::whereIn('ref', array_map(function($a) { return $a['ref']; }, $orders))->get();
+        $query_orders = Product::whereIn('ref', array_map(function ($a) {
+            return $a['ref'];
+        }, $orders))->get();
 
         $map_orders_by_ref = [];
 
-        foreach( $query_orders as $query_order ) {
+        foreach ($query_orders as $query_order) {
             $map_orders_by_ref[$query_order['ref']] = $query_order;
         }
-            
-        foreach( $orders as $key=>$order ) {
+
+        foreach ($orders as $key => $order) {
             $orders[$key]['product_id'] = $map_orders_by_ref[$order['ref']]['id'];
         }
 
@@ -57,26 +61,26 @@ class OrderController extends Controller
         // If it true, we'll increase the quantity of existing orders that have the same product_id
         $merge_with_today = $request->input('merge_with_today', true);
 
-        if($merge_with_today) {
+        if ($merge_with_today) {
             // We merge only the orders that have status null
             $today_orders = Order::whereRaw('date(created_at) = curdate() && status is null')->get(['id', 'product_id', 'quantity'])->toArray();
-            $today_orders_products = array_map(function( $array ) {
+            $today_orders_products = array_map(function ($array) {
                 return $array['product_id'];
-            }, $today_orders);    
+            }, $today_orders);
         }
 
-        foreach( $orders as $order ) {
+        foreach ($orders as $order) {
 
             $order_product_id = $order['product_id'];
             $order_product_quantity = $order['quantity'];
 
             // if the product_id already exists in a today orders, we'll not create it
             // instead we'll store the product id with the additional quantity to updated later
-            if(in_array($order_product_id, $today_orders_products)) {
+            if (in_array($order_product_id, $today_orders_products)) {
 
-                if( isset( $orders_to_merge[$order_product_id] ) ) {
+                if (isset($orders_to_merge[$order_product_id])) {
                     $orders_to_merge[$order_product_id]['addiontal_quantity'] += $order_product_quantity;
-                }else{
+                } else {
                     $orders_to_merge[$order_product_id] = [
                         'product_id' => $order_product_id,
                         'addiontal_quantity' => $order_product_quantity
@@ -84,25 +88,23 @@ class OrderController extends Controller
                 }
 
                 continue;
-
             }
-            
+
             // check if the product already added, if true we increase it quantity
             // otherwise, we insert new order to the array
-            if( isset( $processed_orders[$order_product_id] ) ) {
+            if (isset($processed_orders[$order_product_id])) {
                 $processed_orders[$order_product_id]['quantity']  += $order_product_quantity;
-            }else{
+            } else {
                 $processed_orders[$order_product_id] = [
                     'product_id' => $order_product_id,
                     'quantity' => $order_product_quantity
                 ];
             }
-
         }
 
-        foreach( $today_orders as $today_order ) {
-            
-            if(!isset( $orders_to_merge[$today_order['product_id']] )) {
+        foreach ($today_orders as $today_order) {
+
+            if (!isset($orders_to_merge[$today_order['product_id']])) {
                 continue;
             }
 
@@ -113,27 +115,25 @@ class OrderController extends Controller
         $created_orders_ids = [];
         $merged_orders_ids = [];
 
-        foreach( $processed_orders as $processed_order ) {
+        foreach ($processed_orders as $processed_order) {
             $new_order = Order::create($processed_order);
-            if($new_order) {
+            if ($new_order) {
                 $created_orders_ids[] = $new_order->id;
             }
         }
 
-        foreach( $orders_to_merge as $order_to_merge ) {
-            $current_order = Order::find( $order_to_merge['order_id'] );
+        foreach ($orders_to_merge as $order_to_merge) {
+            $current_order = Order::find($order_to_merge['order_id']);
             $current_order->quantity += $order_to_merge['addiontal_quantity'];
             $current_order->save();
 
             $merged_orders_ids[] = $current_order->id;
-
         }
 
         return response()->json([
             'created' => $created_orders_ids,
             'merged' => $merged_orders_ids
         ]);
-
     }
 
     /**
@@ -144,7 +144,7 @@ class OrderController extends Controller
      */
     public function show(Order $order)
     {
-        return new OrderResource($order::with('product', 'purchase_order')->first());
+        return new OrderResource($order);
     }
 
     /**
@@ -156,15 +156,18 @@ class OrderController extends Controller
      */
     public function update(Request $request, Order $order)
     {
-        
+
         $status = $request->input('status');
-        $quantity = $request->input('quantity');
-        $notes = $request->input('notes');
-        
+
+        if (empty($status)) {
+            return response()->json([
+                'message' => 'Something went wrong.'
+            ], 400);
+        }
+
         $order->update([
             'status' => $status
         ]);
-
     }
 
     /**

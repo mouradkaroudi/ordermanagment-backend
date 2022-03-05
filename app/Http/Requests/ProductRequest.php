@@ -37,11 +37,11 @@ class ProductRequest extends FormRequest
         $skuRules = ['required'];
         
         if(request()->method() == 'PUT') {
-            $refRule[] = Rule::unique('products')->ignore($this->product->id);
+            $refRules[] = Rule::unique('products')->ignore($this->product->id);
             $skuRules[] = Rule::unique('products')->ignore($this->product->id);
         }else{
-            $refRules[] = 'unique:products';
-            $skuRules[] = 'unique:products';
+            $refRules[] = 'unique:products,ref';
+            $skuRules[] = 'unique:products,sku';
         }
 
         return [
@@ -49,7 +49,7 @@ class ProductRequest extends FormRequest
             'name' => ['required'],
             'sku' => $skuRules,
             'image_id' => ['sometimes', 'exists:App\Models\File,id'],
-            //'mainRef' => ['required'],
+            'mainRef' => ['nullable', 'string'],
             'supplier_id' => ['sometimes', 'exists:App\Models\Supplier,id'],
             'location_id' => ['sometimes', 'exists:App\Models\Location,id'],
             'category_id' => ['sometimes', 'exists:App\Models\Category,id'],

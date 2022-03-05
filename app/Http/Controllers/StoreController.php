@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\SupplierCollection;
-use App\Http\Resources\SupplierResource;
-use App\Models\Supplier;
+use App\Http\Resources\StoreCollection;
+use App\Http\Resources\StoreResource;
+use App\Models\Store;
 use Illuminate\Http\Request;
 
-class SupplierController extends Controller
+class StoreController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -16,7 +16,7 @@ class SupplierController extends Controller
      */
     public function index()
     {
-        return (new SupplierCollection(Supplier::latest()->paginate()));
+        return (new StoreCollection(Store::latest()->paginate()));
     }
 
     /**
@@ -27,56 +27,46 @@ class SupplierController extends Controller
      */
     public function store(Request $request)
     {
-        
         $request->validate([
-            'name' => ['required'],
-            'phone' => ['required'],
-            'location_id' => ['required', 'exists:App\Models\Location,id']
+            'name' => ['required']
         ]);
 
-        $supplier = Supplier::create([
-            'name' => $request->input('name'),
-            'phone' => $request->input('phone'),
-            'location_id' => $request->input('location_id'),
+        $store = Store::create([
+            'name' => $request->input('name')
         ]);
 
-        return response()->json($supplier);
-
+        return response()->json($store);
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param  \App\Models\Store  $store
      * @return \Illuminate\Http\Response
      */
-    public function show(Supplier $supplier)
+    public function show(Store $store)
     {
-        return new SupplierResource($supplier);
+        return new StoreResource($store);
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  \App\Models\Store  $store
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Supplier $supplier)
+    public function update(Request $request, Store $store)
     {
         $request->validate([
             'name' => ['required'],
-            'phone' => ['required'],
-            'location_id' => ['required', 'exists:App\Models\Location,id']
         ]);
 
         $fields = [
             'name' => $request->input('name'),
-            'phone' => $request->input('phone'),
-            'location_id' => $request->input('location_id'),
         ];
 
-        if($supplier->update($fields)) {
+        if ($store->update($fields)) {
             return response('', 200);
         }
 
@@ -88,17 +78,17 @@ class SupplierController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param  \App\Models\Store  $store
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Supplier $supplier)
+    public function destroy(Store $store)
     {
-        if($supplier->delete()) {
+        if ($store->delete()) {
             return response('', 200);
-        }else{
+        } else {
             return response()->json([
                 'message' => 'Something went wrong.'
-            ], 400);    
+            ], 400);
         }
     }
 }

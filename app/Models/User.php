@@ -43,4 +43,12 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function scopeFilter($query, $filters)
+    {
+        if (isset($filters['role'])) {
+            $query->where('role', '=', $filters['role']);
+        }
+
+    }
 }

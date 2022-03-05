@@ -46,6 +46,9 @@ class FileController extends Controller
             "resource" => $path,
             "display_name" => $name
         ]);
+        
+        // Add resource url to the response
+        $file["resource_url"] = asset($path);
 
         return $file;
 

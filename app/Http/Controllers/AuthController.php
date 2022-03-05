@@ -23,7 +23,7 @@ class AuthController extends Controller
 
         $user_abilities = [];
 
-        // By default we give grant user with owner role all permissions
+        // By default we grant user with owner role all permissions
         if($user->role == 'owner') {
             $user_abilities[] = '*';
         }else{
