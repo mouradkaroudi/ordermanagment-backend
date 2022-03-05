@@ -23,7 +23,7 @@ class StatisticsInsightController extends Controller
         $total_orders = Order::count();
         $orders_purchased = Order::where('status', 'purchased')->count();
 
-        $purchased_orders_percent = $total_orders == 0 ? '-' : ($orders_purchased / $total_orders) * 100;
+        $purchased_orders_percent = $total_orders == 0 ? 0 : ($orders_purchased / $total_orders) * 100;
 
         return response()->json([
             'unsent_orders' => $unsent_orders,
