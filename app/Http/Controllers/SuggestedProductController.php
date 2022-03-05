@@ -40,14 +40,12 @@ class SuggestedProductController extends Controller
             'user_id' => $request->user()->id,
         ];
 
-        if ($request->input('is_local', false)) {
-            $data['cost'] = $fields['cost'];
-            $data['is_new'] = $request->input('is_new', false);
-        } else {
-            $data['store_id'] = $fields['store_id'];
-            $data['sell_price'] = $fields['sell_price'];
-            $data['sku'] = $fields['sku'];
-        }
+        $data['cost'] = $fields['cost'];
+        $data['is_new'] = $request->input('is_new', false);
+
+        $data['store_id'] = $request->input('store_id');
+        $data['sell_price'] = $request->input('sell_price');
+        $data['sku'] = $request->input('sku');
 
         $product = SuggestedProduct::create($data);
 
@@ -84,16 +82,15 @@ class SuggestedProductController extends Controller
             'user_id' => $request->user()->id,
         ];
 
-        if ($request->input('is_local', false)) {
-            $data['cost'] = $fields['cost'];
-            $data['is_new'] = $request->input('is_new', false);
-        } else {
-            $data['store_id'] = $fields['store_id'];
-            $data['sell_price'] = $fields['sell_price'];
-            $data['sku'] = $fields['sku'];
-        }
+        $data['cost'] = $fields['cost'];
+        $data['is_new'] = $request->input('is_new', false);
 
-        if($suggestedProduct->update($fields)) {
+        $data['store_id'] = $request->input('store_id');
+        $data['sell_price'] = $request->input('sell_price');
+        $data['sku'] = $request->input('sku');
+
+
+        if ($suggestedProduct->update($fields)) {
             return response('', 200);
         }
 
