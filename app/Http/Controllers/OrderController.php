@@ -97,7 +97,7 @@ class OrderController extends Controller
             } else {
                 $processed_orders[$order_product_id] = [
                     'product_id' => $order_product_id,
-                    'quantity' => $order_product_quantity
+                    'quantity' => $order_product_quantity,
                 ];
             }
         }

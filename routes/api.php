@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\DelegateOrdersController;
+use App\Http\Controllers\DelegatePurchaseOrdersController;
 use App\Http\Controllers\DeliveryMethodController;
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\ImportProductsController;
@@ -48,6 +50,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
         'users' => UserController::class,
         'delivery-methods' => DeliveryMethodController::class,
         'suggested-products' => SuggestedProductController::class,
+        'delegate/orders' => DelegatePurchaseOrdersController::class,
         //'purchases/{id}/orders/1' => PurchaseOrderController::class
     ]);
 
