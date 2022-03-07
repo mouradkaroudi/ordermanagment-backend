@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\DelegatePurchaseOrderResource;
-use App\Http\Resources\PurchaseOrderResource;
+use App\Models\Order;
 use App\Models\PurchaseOrder;
 use Illuminate\Http\Request;
 
@@ -56,7 +56,27 @@ class DelegatePurchaseOrdersController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+
+        $user_id = $request->user()->id;
+
+        if(PurchaseOrder::where(['order_id' => $id, 'delegate_id' => $user_id])->count() == 0) {
+            return response()->json([
+                'message' => 'Unauthorized'
+            ], 401);
+        }
+
+        $status = $request->input('status');
+        //return response()->json($status, 400);
+
+
+        if($status == 'issue' || $status == 'purchased') {
+            return Order::where('id', $id)->update([
+                'status' => $status
+            ]);
+        }
+
+        return response()->json('Oops!', 400);
+
     }
 
     /**
