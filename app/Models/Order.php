@@ -37,7 +37,7 @@ class Order extends Model
         }
 
         if(!isset($filters['show']) || $filters['show'] === 'today') {
-            $query->whereRaw('date(created_at) = curdate()');
+            $query->whereRaw('DATE(created_at) = curdate()');
         }
 
         if(isset($filter['location'])) {
