@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -37,7 +38,7 @@ class Order extends Model
         }
 
         if(!isset($filters['show']) || $filters['show'] === 'today') {
-            $query->whereRaw('DATE(created_at) = curdate()');
+            $query->whereDate('created_at', Carbon::today());
         }
 
         if(isset($filter['location'])) {
