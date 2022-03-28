@@ -11,6 +11,17 @@ use Illuminate\Http\Request;
 
 class OrderController extends Controller
 {
+
+    /**
+     * Create the controller instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        $this->authorizeResource(Order::class, 'order');
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -178,6 +189,12 @@ class OrderController extends Controller
      */
     public function destroy(Order $order)
     {
-        //
+        if ($order->delete()) {
+            return response('', 200);
+        } else {
+            return response()->json([
+                'message' => 'Something went wrong.'
+            ], 400);
+        }
     }
 }

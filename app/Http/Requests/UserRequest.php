@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UserRequest extends FormRequest
@@ -24,13 +25,29 @@ class UserRequest extends FormRequest
     public function rules()
     {
 
+        $nameRules = ['required'];
+        $usernameRules = ['required', 'unique:users'];
+        $emailRules = ['required', 'unique:users'];
+        $passwordRules = ['required'];
+        $roleRules = ['required'];
+        $abilitiesRules = ['required', 'array'];
+
+        if(request()->method() == 'PUT') {
+            $nameRules = ['sometimes'];
+            $usernameRules = ['sometimes', Rule::unique('users')->ignore($this->user->id)];
+            $emailRules = ['sometimes', Rule::unique('users')->ignore($this->user->id)];
+            $passwordRules = ['sometimes'];
+            $roleRules = ['sometimes'];
+            $abilitiesRules = ['sometimes', 'array'];    
+        }
+
         return [
-            'name' => ['required'],
-            'username' => ['required', 'unique:users'],
-            'email' => ['required', 'unique:users'],
-            'password' => ['required'],
-            'role' => ['required'],
-            'abilities' => ['required', 'array']
+            'name' => $nameRules,
+            'username' => $usernameRules,
+            'email' => $emailRules,
+            'password' => $passwordRules,
+            'role' => $roleRules,
+            'abilities' => $abilitiesRules
         ];
     }
 }

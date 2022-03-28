@@ -17,7 +17,6 @@ class DelegatePurchaseOrderResource extends JsonResource
     {
 
         $product_id = $this->order->product_id;
-
         $product = ProductResource::make(Product::where('id', $product_id)->first());
         
         return [
@@ -27,7 +26,7 @@ class DelegatePurchaseOrderResource extends JsonResource
                 'status' => $this->order->status,
                 'quantity' => $this->order->quantity
             ],
-            'formattedCost' => $product->cost . 'SAR',
+            'formattedCost' => isset($product->cost) ? $product->cost. 'SAR' : null,
             'product' => $product
         ];
     }

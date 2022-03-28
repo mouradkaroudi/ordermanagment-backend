@@ -25,11 +25,15 @@ class FileController extends Controller
      */
     public function store(Request $request)
     {
+
+        //return ['file' => $request->file('file')];
+        
         $this->validate($request, [
             'file' => 'mimes:png,jpg,jpeg,webp,excel,xlsx|max:2048'
         ]);
 
         $file = $request->file('file');
+        //return ['file' => $file];
         $name = $file->getClientOriginalName();
         $path = $file->storePublicly('public');
 

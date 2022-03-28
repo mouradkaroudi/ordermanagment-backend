@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DelegateOrdersController;
@@ -9,6 +10,7 @@ use App\Http\Controllers\FileController;
 use App\Http\Controllers\ImportProductsController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\OrderTrackingController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\PurchaseOrderController;
@@ -19,6 +21,7 @@ use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VerifyProduct;
 use App\Models\PurchaseOrder;
+use App\Models\User;
 use App\Models\Usermeta;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -34,9 +37,13 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::post('/auth', [AuthController::class, 'index']);
+Route::post('/login', [AuthController::class, 'index']);
 
 Route::middleware(['auth:sanctum'])->group(function () {
+    
+    Route::get('/account', [AccountController::class, 'index']);
+    Route::post('/account', [AccountController::class, 'update']);
+
     Route::apiResources([
         'stores' => StoreController::class,
         'locations' => LocationController::class,
@@ -45,22 +52,16 @@ Route::middleware(['auth:sanctum'])->group(function () {
         'products' => ProductController::class,
         'files' => FileController::class,
         'orders' => OrderController::class,
+        'orders.tracking' => OrderTrackingController::class,
         'purchases' => PurchaseController::class,
         'import-products' => ImportProductsController::class,
         'users' => UserController::class,
         'delivery-methods' => DeliveryMethodController::class,
         'suggested-products' => SuggestedProductController::class,
-        'delegate/orders' => DelegatePurchaseOrdersController::class,
-        //'purchases/{id}/orders/1' => PurchaseOrderController::class
+        'delegate/orders' => DelegatePurchaseOrdersController::class
     ]);
 
     Route::get('/statistics/insights', [StatisticsInsightController::class, 'index']);
-    Route::get('/user', function (Request $request) {
-        $user = $request->user();
-        $user_abilities = Usermeta::where(['user_id' => $user->id, 'key' => 'abilities'])->first('value');
-        $user['abilities'] = $user->currentAccessToken()->abilities;
-        return $user;
-    });
 
     Route::get('/verify-product', VerifyProduct::class);
 

@@ -11,15 +11,32 @@ use Illuminate\Http\Request;
 class SuggestedProductController extends Controller
 {
     /**
+     * Create the controller instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        $this->authorizeResource(SuggestedProduct::class, 'suggested_product');
+    }
+
+    /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
     public function index()
     {
-        $request = request()->all();
+        $request = request();
 
-        return (new SuggestedProductCollection(SuggestedProduct::filter($request)->latest()->paginate()));
+        $query = SuggestedProduct::filter($request->all());
+
+        // if a user only can add suggested products, we need to show the products that he suggested only
+        if($request->user()->tokenCan('add:suggested-products') && !$request->user()->tokenCan('manage:suggested-products')) {
+            $query->where('user_id', $request->user()->id);
+        }
+
+        return (new SuggestedProductCollection($query->latest()->paginate()));
     }
 
     /**
@@ -55,12 +72,12 @@ class SuggestedProductController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\SuggestedProduct  $suggestedProduct
+     * @param  \App\Models\SuggestedProduct  $suggested_product
      * @return \Illuminate\Http\Response
      */
-    public function show(SuggestedProduct $suggestedProduct)
+    public function show(SuggestedProduct $suggested_product)
     {
-        return new SuggestedProductResource($suggestedProduct);
+        return new SuggestedProductResource($suggested_product);
     }
 
     /**
@@ -84,13 +101,12 @@ class SuggestedProductController extends Controller
 
         $data['cost'] = $fields['cost'];
         $data['is_new'] = $request->input('is_new', false);
-
         $data['store_id'] = $request->input('store_id');
         $data['sell_price'] = $request->input('sell_price');
         $data['sku'] = $request->input('sku');
 
 
-        if ($suggestedProduct->update($fields)) {
+        if ($suggestedProduct->update($data)) {
             return response('', 200);
         }
 

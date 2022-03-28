@@ -13,6 +13,17 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class ProductController extends Controller
 {
+
+    /**
+     * Create the controller instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        $this->authorizeResource(Product::class, 'product');
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -36,11 +47,11 @@ class ProductController extends Controller
     {
         // Return the valided fields only
         $fields = $request->validated();
-        
-        // TODO : Move this to another controller
-        $file_id = isset($fields['file_id']) ? $fields['file_id']: false;
 
-        if($file_id) {
+        // TODO : Move this to another controller
+        $file_id = isset($fields['file_id']) ? $fields['file_id'] : false;
+
+        if ($file_id) {
             $file = File::where('id', $file_id)->first();
             $file_path = $file['resource'];
 
@@ -49,19 +60,17 @@ class ProductController extends Controller
 
                 return response()->json([
                     'message' => 'Products imported successfully.'
-                ], 200);        
-                
+                ], 200);
             } catch (\Throwable $th) {
                 return response()->json([
                     'message' => 'Something went wrong.'
-                ], 400);        
+                ], 400);
             }
-
         }
 
         $product = Product::create($fields);
-        
-        if($product) {
+
+        if ($product) {
             return response()->json($product);
         }
 
@@ -78,7 +87,7 @@ class ProductController extends Controller
      */
     public function show(Product $product)
     {
-        
+
         return new ProductResource($product);
     }
 
@@ -94,14 +103,13 @@ class ProductController extends Controller
 
         $fields = $request->validated();
 
-        if($product->update($fields)) {
+        if ($product->update($fields)) {
             return response('', 200);
         }
 
         return response()->json([
             'message' => 'Something went wrong.'
         ], 400);
-
     }
 
     /**
@@ -112,12 +120,12 @@ class ProductController extends Controller
      */
     public function destroy(Product $product)
     {
-        if($product->delete()) {
+        if ($product->delete()) {
             return response('', 200);
-        }else{
+        } else {
             return response()->json([
                 'message' => 'Something went wrong.'
-            ], 400);    
+            ], 400);
         }
     }
 }
