@@ -62,11 +62,16 @@ class Order extends Model
             $query->whereDate('created_at', Carbon::today());
         }
 
-        if (isset($filter['location'])) {
+        if (isset($filters['supplier'])) {
+            $query->whereRelation('product', 'supplier_id',$filters['supplier']);
         }
 
-        if (isset($filter['delegate'])) {
-            $query->whereRelation('purchase_order', 'delegate_id',0);
+        if (isset($filters['location'])) {
+            $query->whereRelation('product', 'location_id',$filters['location']);
+        }
+        
+        if (isset($filters['delegate'])) {
+            $query->whereRelation('purchase_order', 'delegate_id',$filters['delegate']);
         }
     }
 }
