@@ -7,6 +7,7 @@ use App\Http\Resources\OrderCollection;
 use App\Http\Resources\OrderResource;
 use App\Models\Order;
 use App\Models\Product;
+use App\Models\PurchaseOrder;
 use Illuminate\Http\Request;
 
 class OrderController extends Controller
@@ -61,6 +62,8 @@ class OrderController extends Controller
 
         foreach ($orders as $key => $order) {
             $orders[$key]['product_id'] = $map_orders_by_ref[$order['ref']]['id'];
+            $orders[$key]['product_cost'] = $map_orders_by_ref[$order['ref']]['cost'];
+            $orders[$key]['is_paid'] = $map_orders_by_ref[$order['ref']]['is_paid'];
         }
 
         $processed_orders = [];
@@ -84,6 +87,9 @@ class OrderController extends Controller
 
             $order_product_id = $order['product_id'];
             $order_product_quantity = $order['quantity'];
+            $order_product_cost = $order['product_cost'];
+            $order_product_is_paid = $order['is_paid'];
+            $order_product_total_amount = $order_product_is_paid ? 0 : $order['product_cost'] * $order['quantity'];
 
             // if the product_id already exists in a today orders, we'll not create it
             // instead we'll store the product id with the additional quantity to updated later
@@ -105,10 +111,14 @@ class OrderController extends Controller
             // otherwise, we insert new order to the array
             if (isset($processed_orders[$order_product_id])) {
                 $processed_orders[$order_product_id]['quantity']  += $order_product_quantity;
+                $processed_orders[$order_product_id]['total_amount']  += $order_product_total_amount;
             } else {
                 $processed_orders[$order_product_id] = [
                     'product_id' => $order_product_id,
                     'quantity' => $order_product_quantity,
+                    'product_cost' =>  $order_product_cost,
+                    'is_paid' => $order_product_is_paid,
+                    'total_amount' => $order_product_total_amount
                 ];
             }
         }
@@ -136,6 +146,9 @@ class OrderController extends Controller
         foreach ($orders_to_merge as $order_to_merge) {
             $current_order = Order::find($order_to_merge['order_id']);
             $current_order->quantity += $order_to_merge['addiontal_quantity'];
+
+            $current_order->total_amount += $order_to_merge['addiontal_quantity'] * $current_order->product_cost;
+
             $current_order->save();
 
             $merged_orders_ids[] = $current_order->id;
@@ -190,6 +203,10 @@ class OrderController extends Controller
     public function destroy(Order $order)
     {
         if ($order->delete()) {
+
+            // When delete a order, we need also to delete purchase orders linked to that order
+            //PurchaseOrder::where('order_id', $order->id);
+
             return response('', 200);
         } else {
             return response()->json([

@@ -22,7 +22,8 @@ class PurchaseResource extends JsonResource
         return [
             'id' => $this->id,
             'total_cost' => $this->total_cost,
-            'orders_count' => count($this->orders),
+            //'orders_count' => count($this->orders),
+            'orders' => $this->orders,
             'delegate' => $order_delegate->delegate
         ];
     }

@@ -35,7 +35,7 @@ class OrderResource extends JsonResource
             'status' => $this->status,
             'purchase_id' => $this->purchase_order ? $this->purchase_order->purchase_id : null,
             'product' => [
-                'id' => $this->product->name,
+                'id' => $this->product->id,
                 'name' => $this->product->name,
                 'ref' => $this->product->ref,
                 'location' => $this->product->location_id ? Location::where('id', $this->product->location_id)->first(['id', 'name']) : null,

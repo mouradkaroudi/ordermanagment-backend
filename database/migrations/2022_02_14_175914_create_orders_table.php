@@ -16,6 +16,9 @@ return new class extends Migration
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('product_id');
+            $table->float('product_cost');
+            $table->boolean('is_paid');
+            $table->float('total_amount');
             $table->integer('quantity');
             $table->enum('status', ['sent_purchase', 'purchased', 'issue'])->nullable();
             $table->timestamps();

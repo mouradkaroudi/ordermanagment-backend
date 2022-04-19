@@ -16,7 +16,20 @@ class Purchase extends Model
      */
     protected $fillable = ['total_cost'];
 
-    public function orders() {
+    /**
+     * The "booted" method of the model.
+     *
+     * @return void
+     */
+    protected static function booted()
+    {
+        static::deleted(function ($purchase) {
+            $purchase->orders()->delete();
+        });
+    }
+
+    public function orders()
+    {
         return $this->hasMany(PurchaseOrder::class, 'purchase_id', 'id');
     }
 

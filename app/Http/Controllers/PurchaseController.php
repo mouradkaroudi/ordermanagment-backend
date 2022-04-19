@@ -28,29 +28,26 @@ class PurchaseController extends Controller
      */
     public function store(PurchaseRequest $request)
     {
-        
+
         $fields = $request->validated();
 
         $orders_ids = $fields['orders'];
         $delegate_id = $fields['delegate_id'];
 
-        $orders = Order::with('product:id,is_paid,cost')->whereIn('id', $orders_ids)->get();
+        $orders = Order::whereIn('id', $orders_ids)->get();
 
         // Count total purchase cost
         // The cost is the result of multiplication of each order product price with order quantity
         $total_cost = 0;
 
-        foreach( $orders as $order ) {
+        foreach ($orders as $order) {
 
             // We don't count products that have is_paid=true
-            if($order['product']['is_paid']) {
+            if ($order['is_paid']) {
                 continue;
             }
 
-            $order_cost = $order['quantity'] * $order['product']['cost'];
-
-            $total_cost += $order_cost;
-
+            $total_cost += $order['total_amount'];
         }
 
         $purchase = Purchase::create([
@@ -59,7 +56,7 @@ class PurchaseController extends Controller
 
         $purchase_orders = [];
 
-        foreach( $orders_ids as $order_id ) {
+        foreach ($orders_ids as $order_id) {
 
             $purchase_orders[] = [
                 'order_id' => $order_id,
@@ -74,7 +71,6 @@ class PurchaseController extends Controller
         $order->whereIn('id', $orders_ids)->whereRaw('status is null')->update(['status' => 'sent_purchase']);
 
         return response()->json($purchase);
-
     }
 
     /**
@@ -108,6 +104,12 @@ class PurchaseController extends Controller
      */
     public function destroy(Purchase $purchase)
     {
-        //
+        if ($purchase->delete()) {
+            return response('', 200);
+        } else {
+            return response()->json([
+                'message' => 'Something went wrong.'
+            ], 400);
+        }
     }
 }
