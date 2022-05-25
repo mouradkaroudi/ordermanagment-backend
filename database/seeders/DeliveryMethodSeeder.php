@@ -16,11 +16,19 @@ class DeliveryMethodSeeder extends Seeder
      */
     public function run()
     {
-        DeliveryMethod::create([
-            'name' => 'Fedx',
-            'commission' => 5,
-            'min' => 1,
-            'max' => 5
+        DeliveryMethod::insert([
+            [
+                'name' => 'FBN',
+                'commission' => 6,
+                'min' => 9,
+                'max' => 3
+            ],
+            [
+                'name' => 'Direct ship',
+                'commission' => 8,
+                'min' => 12,
+                'max' => 3
+            ]
         ]);
     }
 }

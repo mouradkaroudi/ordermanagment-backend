@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
             LocationSeeder::class,
             SupplierSeeder::class,
             ProductSeeder::class,
+            StoreSeeder::class,
             UserSeeder::class,
             DeliveryMethodSeeder::class
         ]);

@@ -17,9 +17,9 @@ class SupplierSeeder extends Seeder
     public function run()
     {
         Supplier::insert([[
-            'name' => 'Mourad karoudi',
+            'name' => 'الحارثي',
             'phone' => '+21288635392',
-            'location_id' => 1,
+            'location_id' => 2,
         ]]);
     }
 }

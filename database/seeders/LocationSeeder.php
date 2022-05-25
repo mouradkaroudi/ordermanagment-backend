@@ -3,9 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Location;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
 
 class LocationSeeder extends Seeder
 {
@@ -16,10 +14,21 @@ class LocationSeeder extends Seeder
      */
     public function run()
     {
-        Location::insert([[
-            'name' => 'الرياض',
-        ], [
-            'name' => 'الأحذية'
-        ]]);
+        Location::insert(
+            [
+                [
+                    'name' => 'باب مكة',
+                ],
+                [
+                    'name' => 'الخاسكية',
+                ],
+                [
+                    'name' => 'الهنداوية',
+                ],
+                [
+                    'name' => 'الجنوبية'
+                ]
+            ]
+        );
     }
 }

@@ -16,12 +16,23 @@ class CategorySeeder extends Seeder
      */
     public function run()
     {
-        Category::insert([[
-            'name' => 'الهواتف',
-            'commission' => 4
-        ], [
-            'name' => 'الأحذية',
-            'commission' => 6.5
-        ]]);
+        Category::insert([
+            [
+                'name' => 'الالعاب',
+                'commission' => 10
+            ],
+            [
+                'name' => 'الخردوات والهوم',
+                'commission' => 10
+            ],
+            [
+                'name' => 'الساعات',
+                'commission' => 14
+            ],
+            [
+                'name' => 'اكسسوارات جوال',
+                'commission' => 9
+            ]
+        ]);
     }
 }
