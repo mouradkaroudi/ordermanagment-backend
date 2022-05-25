@@ -24,6 +24,7 @@ return new class extends Migration
             $table->string('sku')->nullable();
             $table->integer('cost')->nullable();
             $table->boolean('is_new')->nullable();
+            $table->enum('status', ['added', 'accepeted'])->default('added');
             $table->timestamps();
         });
     }

@@ -26,6 +26,7 @@ class OrderRequest extends FormRequest
         return [
             'orders' => ['required', 'array'],
             'orders.*.ref' => ['required', 'exists:App\Models\Product,ref'],
+            'orders.*.store_id' => ['required', 'exists:App\Models\Store,id'],
             'orders.*.quantity' => ['required', 'numeric', 'gt:0']
         ];
     }

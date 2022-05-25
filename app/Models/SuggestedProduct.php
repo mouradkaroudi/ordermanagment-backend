@@ -23,7 +23,8 @@ class SuggestedProduct extends Model
         'sell_price',
         'sku',
         'cost',
-        'is_new'
+        'is_new',
+        'status'
     ];
 
     public function user() {
@@ -40,8 +41,13 @@ class SuggestedProduct extends Model
     }
 
     public function scopeFilter($query, $filters)
-    {
-
+    {   
+        // by default we retieve the added products
+        if(isset($filters['status'])) {
+            $query->where('status', $filters['status']);
+        }else{
+            $query->where('status', 'added');
+        }
     }
 
 }

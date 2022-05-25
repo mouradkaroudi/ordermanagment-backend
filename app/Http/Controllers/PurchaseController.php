@@ -2,14 +2,25 @@
 
 namespace App\Http\Controllers;
 
-use App\Events\OrderSentToPurchase;
+use App\Http\Requests\PurchasePutRequest;
 use App\Http\Requests\PurchaseRequest;
 use App\Http\Resources\PurchaseResource;
-use App\Models\Order;
 use App\Models\Purchase;
+use Illuminate\Http\Request;
 
 class PurchaseController extends Controller
 {
+
+    /**
+     * Create the controller instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        $this->authorizeResource(Purchase::class, 'purchase');
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -17,7 +28,9 @@ class PurchaseController extends Controller
      */
     public function index()
     {
-        return PurchaseResource::collection(Purchase::with('orders')->latest()->paginate(1000));
+        $request = request()->all();
+
+        return PurchaseResource::collection(Purchase::filter($request)->latest()->paginate(1000));
     }
 
     /**
@@ -29,46 +42,18 @@ class PurchaseController extends Controller
     public function store(PurchaseRequest $request)
     {
 
-        $fields = $request->validated();
+        $request->validated();
 
-        $orders_ids = $fields['orders'];
-        $delegate_id = $fields['delegate_id'];
+        $order_id =  $request->input('order_id');
+        $quantity =  $request->input('quantity');
 
-        $orders = Order::whereIn('id', $orders_ids)->get();
-
-        // Count total purchase cost
-        // The cost is the result of multiplication of each order product price with order quantity
-        $total_cost = 0;
-
-        foreach ($orders as $order) {
-
-            // We don't count products that have is_paid=true
-            if ($order['is_paid']) {
-                continue;
-            }
-
-            $total_cost += $order['total_amount'];
-        }
+        $delegate_id =  $request->user()->id;
 
         $purchase = Purchase::create([
-            'total_cost' => $total_cost
+            'order_id' => $order_id,
+            'delegate_id' => $delegate_id,
+            'quantity' => $quantity
         ]);
-
-        $purchase_orders = [];
-
-        foreach ($orders_ids as $order_id) {
-
-            $purchase_orders[] = [
-                'order_id' => $order_id,
-                'delegate_id' => $delegate_id
-            ];
-        }
-
-        $purchase->orders()->createMany($purchase_orders);
-
-        // Update order status
-        $order = new Order();
-        $order->whereIn('id', $orders_ids)->whereRaw('status is null')->update(['status' => 'sent_purchase']);
 
         return response()->json($purchase);
     }
@@ -81,7 +66,7 @@ class PurchaseController extends Controller
      */
     public function show(Purchase $purchase)
     {
-        return response()->json($purchase::with('orders')->get());
+        return new PurchaseResource($purchase);
     }
 
     /**
@@ -91,9 +76,27 @@ class PurchaseController extends Controller
      * @param  \App\Models\Purchase  $purchase
      * @return \Illuminate\Http\Response
      */
-    public function update(PurchaseRequest $request, Purchase $purchase)
+    public function update(PurchasePutRequest $request, Purchase $purchase)
     {
-        //
+        $request->validated();
+
+        $order_id = $request->input('order_id');
+        $recieved_quantity = $request->input('quantity');
+
+        $quantity = $purchase->quantity;
+
+        $missing_quantity = $quantity - $recieved_quantity;
+
+        $status = $missing_quantity == 0 ? 'completed' : 'missing_quantity';
+        $purchase->update([
+            'order_id' => $order_id,
+            'quantity' => $quantity,
+            'status' => $status,
+            'missing_quantity' => $missing_quantity,
+            'reviewier_id' => request()->user()->id
+        ]);
+
+        return response()->json([], 200);
     }
 
     /**
@@ -111,5 +114,33 @@ class PurchaseController extends Controller
                 'message' => 'Something went wrong.'
             ], 400);
         }
+    }
+
+    //
+    // Custom endpoints
+    //
+
+
+    /**
+     * 
+     * 
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function status(Request $request, $id)
+    {
+
+        //$this->authorize('invoice', $request);
+
+        $invoice_id = $request->input('invoice_id');
+
+        $purchase = Purchase::find($id);
+
+        $purchase->update([
+            'status' => 'completed',
+            'return_invoice_id' => $invoice_id
+        ]);
+        
+        return response()->json([], 200);
     }
 }

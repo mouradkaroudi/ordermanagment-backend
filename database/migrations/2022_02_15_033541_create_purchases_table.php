@@ -15,7 +15,13 @@ return new class extends Migration
     {
         Schema::create('purchases', function (Blueprint $table) {
             $table->id();
-            $table->integer('total_cost');
+            $table->integer('order_id'); // Foreign key to orders table 
+            $table->integer('delegate_id');
+            $table->integer('quantity'); //
+            $table->enum('status', ['under_review', 'completed', 'missing_quantity'])->default('under_review');
+            $table->integer('missing_quantity')->default(0);
+            $table->string('return_invoice_id')->nullable();
+            $table->integer('reviewier_id')->nullable(); // user who reviewed the purchase
             $table->timestamps();
         });
     }

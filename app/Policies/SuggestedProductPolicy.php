@@ -40,7 +40,7 @@ class SuggestedProductPolicy
      * @return \Illuminate\Auth\Access\Response|bool
      */
     public function create(User $user)
-    {   
+    {
         return $user->tokenCan('manage:suggested-products') || $user->tokenCan('add:suggested-products');
     }
 
@@ -53,7 +53,11 @@ class SuggestedProductPolicy
      */
     public function update(User $user, SuggestedProduct $suggestedProduct)
     {
-        return $user->tokenCan('manage:suggested-products') || $suggestedProduct->user_id === $user->id;
+        if (!$user->tokenCan('manage:suggested-products') && $user->tokenCan('add:suggested-products')) {
+            return $suggestedProduct->user_id === $user->id && $suggestedProduct->status === 'added';
+        }
+
+        return $user->tokenCan('manage:suggested-products');
     }
 
     /**
@@ -65,7 +69,11 @@ class SuggestedProductPolicy
      */
     public function delete(User $user, SuggestedProduct $suggestedProduct)
     {
-        return $user->tokenCan('manage:suggested-products') || $suggestedProduct->user_id === $user->id;
+        if (!$user->tokenCan('manage:suggested-products') && $user->tokenCan('add:suggested-products')) {
+            return $suggestedProduct->user_id === $user->id && $suggestedProduct->status === 'added';
+        }
+
+        return $user->tokenCan('manage:suggested-products');
     }
 
     /**
@@ -77,7 +85,7 @@ class SuggestedProductPolicy
      */
     public function restore(User $user, SuggestedProduct $suggestedProduct)
     {
-        //
+        return false;
     }
 
     /**
@@ -89,6 +97,6 @@ class SuggestedProductPolicy
      */
     public function forceDelete(User $user, SuggestedProduct $suggestedProduct)
     {
-        //
+        return false;
     }
 }

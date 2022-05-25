@@ -18,30 +18,30 @@ class OrderResource extends JsonResource
      */
     public function toArray($request)
     {
-
-        $delegate = null;
         $product_image_url = null;
-        if($this->purchase_order) {
-            $delegate = User::where('id', $this->purchase_order->delegate_id)->first(['id', 'name']);
-        }
 
         if($this->product->image) {
             $product_image_url = $this->product->image->storage_type == 'local' ? asset($this->product->image->resource) : $this->product->image->resource;
         }
 
+        $quantity = $this->products->sum('quantity');
+
         return [
             'id' => $this->id,
-            'quantity' => $this->quantity,
+            'product_id' => $this->product_id,
+            'product_cost' => $this->product_cost,
+            'product_name' => $this->product->name,
+            'product_ref' => $this->product->ref,
+            'product_mainRef' => $this->product->mainRef,
+            'product_image' => $product_image_url,
+            'is_paid' => $this->is_paid,
             'status' => $this->status,
-            'purchase_id' => $this->purchase_order ? $this->purchase_order->purchase_id : null,
-            'product' => [
-                'id' => $this->product->id,
-                'name' => $this->product->name,
-                'ref' => $this->product->ref,
-                'location' => $this->product->location_id ? Location::where('id', $this->product->location_id)->first(['id', 'name']) : null,
-                'image_url' => $product_image_url,
-            ],
-            'delegate' => $delegate,
+            'location' => $this->product?->location,
+            'supplier' => $this->product?->supplier,
+            'delegate' => $this->delegate,
+            'quantity' =>  $quantity,
+            'rest_quantity' => $quantity - $this->purchases->where('status','!=', 'under_review')->sum('quantity'),
+            'total_cost' => $this->products->sum('total_amount'),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at
         ];

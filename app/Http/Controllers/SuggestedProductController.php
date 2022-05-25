@@ -32,7 +32,7 @@ class SuggestedProductController extends Controller
         $query = SuggestedProduct::filter($request->all());
 
         // if a user only can add suggested products, we need to show the products that he suggested only
-        if($request->user()->tokenCan('add:suggested-products') && !$request->user()->tokenCan('manage:suggested-products')) {
+        if ($request->user()->tokenCan('add:suggested-products') && !$request->user()->tokenCan('manage:suggested-products')) {
             $query->where('user_id', $request->user()->id);
         }
 
@@ -124,6 +124,48 @@ class SuggestedProductController extends Controller
     public function destroy(SuggestedProduct $suggestedProduct)
     {
         if ($suggestedProduct->delete()) {
+            return response('', 200);
+        } else {
+            return response()->json([
+                'message' => 'Something went wrong.'
+            ], 400);
+        }
+    }
+
+
+    //
+    // Custom endpoints
+    //
+
+    /**
+     * //
+     * 
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function accept( Request $request, $product_id )
+    {
+
+        $product = SuggestedProduct::find($product_id);
+
+        $user = $request->user();
+
+        if(!$user->tokenCan('manage:suggested-products')) {
+            return response()->json([
+                'message' => 'You are not authorized to accept suggested products.'
+            ], 403);
+
+        }
+        
+        if ( !$product ) {
+            return response()->json([
+                'message' => 'Product not found.'
+            ], 404);
+        }
+
+        $product->status = 'accepeted';
+
+        if ($product->save()) {
             return response('', 200);
         } else {
             return response()->json([

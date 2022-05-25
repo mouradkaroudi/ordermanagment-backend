@@ -48,6 +48,14 @@ class Product extends Model
         return $this->hasOne(File::class, 'id', 'image_id');
     }
 
+    /**
+     * Scope a query to filter products.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param  array  $filters
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+
     public function scopeFilter($query, $filters)
     {
         if (isset($filters['ref'])) {

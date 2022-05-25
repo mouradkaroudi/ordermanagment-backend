@@ -31,10 +31,10 @@ class SuggestedProductRequest extends FormRequest
             'category_id' => ['required', 'exists:App\Models\Category,id'],
             'delivery_method_id' => ['required', 'exists:App\Models\DeliveryMethod,id'],
             // if product is from a store
-            'sell_price' => ['required_with:store_id', 'gt:0'],
-            'sku' => ['required_with:store_id', 'string'],
+            'sell_price' => 'required_without:is_local|nullable|numeric',
+            'sku' => 'required_without:is_local|nullable|string',
             // if product is from a local market
-            'cost' => ['required_if:is_local,true', 'gt:0']
+            'cost' => ['required_if:is_local,true', 'numeric']
         ];
     }
 }

@@ -18,12 +18,15 @@ return new class extends Migration
             $table->bigInteger('product_id');
             $table->float('product_cost');
             $table->boolean('is_paid');
-            $table->float('total_amount');
-            $table->integer('quantity');
-            $table->enum('status', ['sent_purchase', 'purchased', 'issue'])->nullable();
+            $table->integer('delegate_id')->nullable();
+            $table->enum('status', [
+                'sent', // Sent order to a delegate 
+                'purchased', // Order purchased with full quantity
+                'uncompleted_quantity', // Order purchased with partial quantity
+                ]
+            )->nullable();
             $table->timestamps();
         });
-
     }
 
     /**

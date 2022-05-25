@@ -10,7 +10,6 @@ class Order extends Model
 {
     use HasFactory;
 
-
     /**
      * The attributes that are mass assignable.
      *
@@ -20,8 +19,7 @@ class Order extends Model
         'product_id',
         'product_cost',
         'is_paid',
-        'total_amount',
-        'quantity', 
+        'delegate_id',
         'status'
     ];
 
@@ -32,20 +30,29 @@ class Order extends Model
      */
     protected static function booted()
     {
+        /*
         static::deleted(function ($order) {
             $order->purchase_order()->delete();
-        });
+        });*/
     }
 
 
-    public function product()
+    public function products()
     {
-        return $this->hasOne(Product::class, 'id', 'product_id')->withTrashed();
+        return $this->hasMany(OrderProduct::class, 'order_id', 'id');
     }
 
-    public function purchase_order()
+    public function product() {
+        return $this->hasOne(Product::class, 'id', 'product_id');
+    }
+
+    public function delegate() {
+        return $this->hasOne(User::class, 'id', 'delegate_id');
+    }
+
+    public function purchases()
     {
-        return $this->hasOne(PurchaseOrder::class, 'order_id', 'id');
+        return $this->hasMany(Purchase::class, 'order_id', 'id');
     }
 
     public function scopeFilter($query, $filters)
@@ -59,7 +66,7 @@ class Order extends Model
         }
 
         if (!isset($filters['show']) || $filters['show'] === 'today') {
-            $query->whereDate('created_at', Carbon::today());
+            //$query->whereDate('created_at', Carbon::today());
         }
 
         if (isset($filters['supplier'])) {

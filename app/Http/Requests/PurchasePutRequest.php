@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class PurchaseRequest extends FormRequest
+class PurchasePutRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,7 +25,7 @@ class PurchaseRequest extends FormRequest
     {
         return [
             'order_id' => ['required', 'exists:App\Models\Order,id'],
-            'quantity' => ['required', 'integer', 'min:1']
+            'quantity' => ['required', 'integer']
         ];
     }
 }

@@ -32,6 +32,7 @@ class SuggestedProductResource extends JsonResource
             'sell_price' => $this->sell_price ?? '',
             'sku' => $this->sku ?? '',
             'cost' => $this->cost ?? 0,
+            'status' => $this->status,
             'is_new' => $this->is_new ?? false
         ];
     }

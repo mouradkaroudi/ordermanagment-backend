@@ -3,26 +3,23 @@
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryController;
-use App\Http\Controllers\DelegateOrdersController;
-use App\Http\Controllers\DelegatePurchaseOrdersController;
+use App\Http\Controllers\DelegateOrderController;
+use App\Http\Controllers\DelegatePurchaseController;
 use App\Http\Controllers\DeliveryMethodController;
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\ImportProductsController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\OrderProductsController;
 use App\Http\Controllers\OrderTrackingController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\PurchaseController;
-use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\StatisticsInsightController;
 use App\Http\Controllers\StoreController;
 use App\Http\Controllers\SuggestedProductController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VerifyProduct;
-use App\Models\PurchaseOrder;
-use App\Models\User;
-use App\Models\Usermeta;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -44,6 +41,14 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/account', [AccountController::class, 'index']);
     Route::post('/account', [AccountController::class, 'update']);
 
+    Route::put('/orders/assign-delegate', [OrderController::class, 'assignDelegate']);
+    Route::put('/purchases/{purchase}/status', [PurchaseController::class, 'status']);
+    
+    Route::post('/suggested-products/{id}/accept', [SuggestedProductController::class, 'accept']);
+    
+    //Route::put('/purchases/{purchase}/update-return-invoice-id', [OrderController::class, 'assignDelegate']);
+    //Route::get('/orders/{id}/products', [OrderController::clas])
+
     Route::apiResources([
         'stores' => StoreController::class,
         'locations' => LocationController::class,
@@ -53,12 +58,14 @@ Route::middleware(['auth:sanctum'])->group(function () {
         'files' => FileController::class,
         'orders' => OrderController::class,
         'orders.tracking' => OrderTrackingController::class,
+        'orders/{order}/products' =>  OrderProductsController::class,
         'purchases' => PurchaseController::class,
         'import-products' => ImportProductsController::class,
         'users' => UserController::class,
         'delivery-methods' => DeliveryMethodController::class,
         'suggested-products' => SuggestedProductController::class,
-        'delegate/orders' => DelegatePurchaseOrdersController::class
+        'delegate/orders' => DelegateOrderController::class,
+        'delegate/purchases' => DelegatePurchaseController::class
     ]);
 
     Route::get('/statistics/insights', [StatisticsInsightController::class, 'index']);

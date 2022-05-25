@@ -17,14 +17,23 @@ class PurchaseResource extends JsonResource
     public function toArray($request)
     {
 
-        $order_delegate = PurchaseOrder::with('delegate')->where('purchase_id', $this->id)->first();
+        $reviewer = $this->reviewer ? [
+            'id' => $this->reviewer->id,
+            'name' => $this->reviewer->name
+        ] : null;
 
         return [
             'id' => $this->id,
-            'total_cost' => $this->total_cost,
-            //'orders_count' => count($this->orders),
-            'orders' => $this->orders,
-            'delegate' => $order_delegate->delegate
+            'order_id' => $this->order_id,
+            'order' => new OrderResource( $this->order ),
+            'delegate' => [
+                'id' => $this->delegate->id,
+                'name' => $this->delegate->name
+            ],
+            'quantity' => $this->quantity,
+            'status' => $this->status,
+            'missing_quantity' => $this->missing_quantity,
+            'reviewer' => $reviewer
         ];
     }
 }

@@ -23,7 +23,7 @@ return new class extends Migration
             $table->integer('supplier_id')->nullable();
             $table->integer('location_id')->nullable();
             $table->integer('category_id')->nullable();
-            $table->float('cost');
+            $table->decimal('cost', 8, 2);
             $table->boolean('is_paid')->default(false);
             $table->timestamps();
             $table->softDeletes();
