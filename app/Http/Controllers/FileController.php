@@ -25,11 +25,9 @@ class FileController extends Controller
      */
     public function store(Request $request)
     {
-
-        //return ['file' => $request->file('file')];
         
         $this->validate($request, [
-            'file' => 'mimes:png,jpg,jpeg,webp,excel,xlsx|max:2048'
+            'file' => 'mimes:png,jpg,jpeg,webp,excel,xlsx,csv|max:2048'
         ]);
 
         $file = $request->file('file');

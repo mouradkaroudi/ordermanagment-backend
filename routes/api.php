@@ -3,6 +3,7 @@
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\ConvertCsvController;
 use App\Http\Controllers\DelegateOrderController;
 use App\Http\Controllers\DelegatePurchaseController;
 use App\Http\Controllers\DeliveryMethodController;
@@ -45,9 +46,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::put('/purchases/{purchase}/status', [PurchaseController::class, 'status']);
     
     Route::post('/suggested-products/{id}/accept', [SuggestedProductController::class, 'accept']);
-    
-    //Route::put('/purchases/{purchase}/update-return-invoice-id', [OrderController::class, 'assignDelegate']);
-    //Route::get('/orders/{id}/products', [OrderController::clas])
+
+    Route::post('/convert-csv', ConvertCsvController::class);
 
     Route::apiResources([
         'stores' => StoreController::class,
