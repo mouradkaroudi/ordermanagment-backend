@@ -66,7 +66,7 @@ class Order extends Model
         }
 
         if (!isset($filters['show']) || $filters['show'] === 'today') {
-            //$query->whereDate('created_at', Carbon::today());
+            $query->whereDate('created_at', Carbon::today());
         }
 
         if (isset($filters['supplier'])) {
@@ -78,7 +78,7 @@ class Order extends Model
         }
         
         if (isset($filters['delegate'])) {
-            $query->whereRelation('purchase_order', 'delegate_id',$filters['delegate']);
+            $query->where('delegate_id',$filters['delegate']);
         }
     }
 }

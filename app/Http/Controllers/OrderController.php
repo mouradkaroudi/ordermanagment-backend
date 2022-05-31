@@ -3,11 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\OrderRequest;
-use App\Http\Resources\OrderCollection;
 use App\Http\Resources\OrderResource;
 use App\Models\Order;
 use App\Models\Product;
-use App\Models\PurchaseOrder;
 use Illuminate\Http\Request;
 
 class OrderController extends Controller
@@ -86,18 +84,22 @@ class OrderController extends Controller
 
         if(!empty($orders)) {
             $processed_orders = $this->processOrders($orders);
-            $order->products()->createMany($processed_orders['products']);
+            $order->products()->createMany($processed_orders[$order->product_id]['products']);
         }
 
-        if (empty($status)) {
-            return response()->json([
-                'message' => 'Something went wrong.'
-            ], 400);
+        if (!empty($status)) {
+            $update = $order->update([
+                'status' => $status
+            ]);
+
+            if(!$update) {
+                response()->json([
+                    'message' => 'Something went wrong.'
+                ], 400);
+            }
         }
 
-        $order->update([
-            'status' => $status
-        ]);
+
     }
 
     /**
