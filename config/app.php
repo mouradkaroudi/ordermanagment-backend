@@ -54,7 +54,7 @@ return [
     |
     */
 
-    'url' => env('APP_URL', 'https://wp-art.com'),
+    'url' => env('APP_URL', 'http://fun-moment.co'),
 
     'asset_url' => env('ASSET_URL', null),
 
