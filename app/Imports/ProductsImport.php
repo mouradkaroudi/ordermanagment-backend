@@ -30,7 +30,7 @@ class ProductsImport implements ToModel, WithUpserts
 
             $image = $row[5];
 
-            $to_be_imported = [
+            $entries = [
                 'sku' => $row[0],
                 'ref' => $row[1],
                 'cost' => $row[2],
@@ -45,11 +45,19 @@ class ProductsImport implements ToModel, WithUpserts
                     'display_name' => $row[4]
                 ]);
 
-                $to_be_imported['image_id'] = $file->id;
+                $entries['image_id'] = $file->id;
 
             }
 
-            return new Product($to_be_imported);
+            $product = Product::where('ref', $row[1])->orWhere('sku', $row[0])->first();
+            if($product) {
+                $product->cost = $row[2];
+                $product->name = $row[4];
+                $product->save();
+            }else{
+                $product = Product::create($entries);
+            }
+
         }
 
         $this->current_row++;
