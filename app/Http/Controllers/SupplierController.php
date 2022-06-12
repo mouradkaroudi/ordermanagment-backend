@@ -18,7 +18,7 @@ class SupplierController extends Controller
     {
         $request = request()->all();
 
-        $query = Supplier::latest();
+        $query = Supplier::filter($request)->latest();
 
         if(isset($request['per_page']) && $request['per_page'] == -1) {
             $query = $query->get();

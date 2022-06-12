@@ -20,4 +20,19 @@ class Supplier extends Model
         return $this->hasOne(Location::class, 'id', 'location_id');
     }
 
+    /**
+     * Scope a query to filter products.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param  array  $filters
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+
+    public function scopeFilter($query, $filters)
+    {
+        if (isset($filters['name']) && !empty($filters['name'])) {
+            $query->where('name', 'like', '%' .$filters['name'] . '%');
+        }
+    }
+
 }

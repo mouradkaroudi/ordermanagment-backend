@@ -58,7 +58,7 @@ class Product extends Model
     public function scopeFilter($query, $filters)
     {
         if (isset($filters['product_ref_sku']) && !empty($filters['product_ref_sku'])) {
-            $query->where('ref', '=', $filters['product_ref_sku'])->orWhere('sku', '=', $filters['product_ref_sku']);
+            $query->where('ref', 'like', '%'.$filters['product_ref_sku'].'%')->orWhere('sku', 'like', '%'.$filters['product_ref_sku'].'%');
         }
 
         if (isset($filters['category'])) {
@@ -69,8 +69,13 @@ class Product extends Model
            $query->where('location_id', $filters['location']);
         }
 
-        if (isset($filters['suppliers'])) {
-            //$query->where('supplier_id', $filters['supplier']);
+        if (isset($filters['supplier'])) {
+            
+            $suppliers = Supplier::where('name', 'like', '%'. $filters['supplier'].'%')->pluck('id')->toArray();
+            
+            $query->whereHas('suppliers', function ($query) use ($suppliers) {
+                $query->whereIn('supplier_id', $suppliers);
+            });
         }
 
 
