@@ -14,6 +14,7 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\OrderProductsController;
 use App\Http\Controllers\OrderTrackingController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ProductSuppliersController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\StatisticsInsightController;
 use App\Http\Controllers\StoreController;
@@ -21,6 +22,7 @@ use App\Http\Controllers\SuggestedProductController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VerifyProduct;
+use App\Models\ProductSuppliers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Route;
@@ -56,6 +58,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
         'suppliers' => SupplierController::class,
         'categories' => CategoryController::class,
         'products' => ProductController::class,
+        'products/{product}/suppliers' => ProductSuppliersController::class,
         'files' => FileController::class,
         'orders' => OrderController::class,
         'orders.tracking' => OrderTrackingController::class,

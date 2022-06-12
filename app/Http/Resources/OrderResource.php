@@ -2,10 +2,6 @@
 
 namespace App\Http\Resources;
 
-use App\Models\Location;
-use App\Models\Purchase;
-use App\Models\PurchaseOrder;
-use App\Models\User;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class OrderResource extends JsonResource

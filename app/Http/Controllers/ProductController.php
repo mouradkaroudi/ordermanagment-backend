@@ -8,6 +8,7 @@ use App\Http\Resources\ProductResource;
 use App\Imports\ProductsImport;
 use App\Models\File;
 use App\Models\Product;
+use App\Models\ProductSuppliers;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -62,9 +63,6 @@ class ProductController extends Controller
                     'message' => 'Products imported successfully.'
                 ], 200);
             } catch (\Throwable $th) {
-
-                var_dump($th->getMessage());
-
                 return response()->json([
                     'message' => 'Something went wrong.'
                 ], 400);
@@ -74,6 +72,7 @@ class ProductController extends Controller
         $product = Product::create($fields);
 
         if ($product) {
+            $product->suppliers()->createMany($fields['suppliers']);
             return response()->json($product);
         }
 
@@ -107,6 +106,15 @@ class ProductController extends Controller
         $fields = $request->validated();
 
         if ($product->update($fields)) {
+            if (isset($fields['suppliers']) && is_array($fields['suppliers'])) {
+                foreach( $fields['suppliers'] as $supplier ) {
+                    $arr = [
+                        'supplier_id' => $supplier['supplier_id'],
+                        'product_id' => $product->id,
+                    ];
+                    $product->suppliers()->updateOrCreate($arr, $arr);
+                }
+            }
             return response('', 200);
         }
 

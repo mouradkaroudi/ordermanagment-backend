@@ -2,6 +2,8 @@
 
 namespace App\Http\Resources;
 
+use App\Models\ProductSuppliers;
+use App\Models\Supplier;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class ProductResource extends JsonResource
@@ -21,6 +23,8 @@ class ProductResource extends JsonResource
             $image = $this->image->storage_type == 'local' ? asset($this->image->resource) : $this->image->resource;
         }
 
+        $suppliers = [];
+
         return [
             'id' => $this->id,
             'ref' => $this->ref,
@@ -30,7 +34,7 @@ class ProductResource extends JsonResource
             'mainRef' => $this->mainRef,
             'cost' => $this->cost,
             'is_paid' => $this->is_paid,
-            'supplier' => $this->supplier,
+            'suppliers' => ProductSuppliersResource::collection($this->suppliers),
             'location' => $this->location,
             'category' => $this->category,
         ];

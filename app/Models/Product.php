@@ -21,16 +21,15 @@ class Product extends Model
         'image_id',
         'sku',
         'mainRef',
-        'supplier_id',
         'location_id',
         'category_id',
         'cost',
         'is_paid',
     ];
 
-    public function supplier()
+    public function suppliers()
     {
-        return $this->hasOne(Supplier::class, 'id', 'supplier_id');
+        return $this->hasMany(ProductSuppliers::class, 'product_id', 'id');
     }
 
     public function location()
@@ -70,8 +69,8 @@ class Product extends Model
            $query->where('location_id', $filters['location']);
         }
 
-        if (isset($filters['supplier'])) {
-            $query->where('supplier_id', $filters['supplier']);
+        if (isset($filters['suppliers'])) {
+            //$query->where('supplier_id', $filters['supplier']);
         }
 
 

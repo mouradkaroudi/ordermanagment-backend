@@ -16,7 +16,17 @@ class SupplierController extends Controller
      */
     public function index()
     {
-        return (new SupplierCollection(Supplier::latest()->paginate()));
+        $request = request()->all();
+
+        $query = Supplier::latest();
+
+        if(isset($request['per_page']) && $request['per_page'] == -1) {
+            $query = $query->get();
+        }else{
+            $query = $query->paginate();
+        }
+
+        return (new SupplierCollection($query));
     }
 
     /**
