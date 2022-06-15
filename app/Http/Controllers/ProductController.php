@@ -69,10 +69,15 @@ class ProductController extends Controller
             }
         }
 
+        // convert ref to lowercase
+        $fields['ref'] = strtolower($fields['ref']);
+
         $product = Product::create($fields);
 
         if ($product) {
-            $product->suppliers()->createMany($fields['suppliers']);
+            if(isset($fields['suppliers'])) {
+                $product->suppliers()->createMany($fields['suppliers']);
+            }
             return response()->json($product);
         }
 
@@ -104,6 +109,9 @@ class ProductController extends Controller
     {
 
         $fields = $request->validated();
+
+        //convert ref to lowercase
+        $fields['ref'] = strtolower($fields['ref']);
 
         if ($product->update($fields)) {
             if (isset($fields['suppliers']) && is_array($fields['suppliers'])) {

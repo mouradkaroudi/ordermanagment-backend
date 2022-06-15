@@ -32,7 +32,7 @@ class ProductsImport implements ToModel, WithUpserts
 
             $entries = [
                 'sku' => $row[0],
-                'ref' => $row[1],
+                'ref' => strtolower($row[1]),
                 'cost' => $row[2],
                 'name' => $row[4]
             ];
