@@ -52,7 +52,8 @@ class DelegateOrderResource extends JsonResource
                 'ref' => $this->product->ref,
                 'mainRef' => $this->product->mainRef,
                 'image_url' => $product_image_url,    
-                'supplier' => $supplier
+                'supplier' => $supplier,
+                'suppliers' => ProductSuppliersResource::collection($this->product->suppliers)
             ]
         ];
     }

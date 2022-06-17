@@ -20,7 +20,6 @@ return new class extends Migration
             $table->integer('image_id')->nullable();
             $table->string('sku')->unique();
             $table->string('mainRef')->nullable();
-            $table->integer('supplier_id')->nullable();
             $table->integer('location_id')->nullable();
             $table->integer('category_id')->nullable();
             $table->decimal('cost', 8, 2);

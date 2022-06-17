@@ -21,7 +21,6 @@ class Product extends Model
         'image_id',
         'sku',
         'mainRef',
-        'location_id',
         'category_id',
         'cost',
         'is_paid',
@@ -30,11 +29,6 @@ class Product extends Model
     public function suppliers()
     {
         return $this->hasMany(ProductSuppliers::class, 'product_id', 'id');
-    }
-
-    public function location()
-    {
-        return $this->hasOne(Location::class, 'id', 'location_id');
     }
 
     public function category()
@@ -63,10 +57,6 @@ class Product extends Model
 
         if (isset($filters['category'])) {
             $query->where('category_id', $filters['category']);
-        }
-
-        if (isset($filters['location'])) {
-           $query->where('location_id', $filters['location']);
         }
 
         if (isset($filters['supplier'])) {

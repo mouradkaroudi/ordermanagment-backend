@@ -32,14 +32,13 @@ class OrderResource extends JsonResource
             'product_image' => $product_image_url,
             'is_paid' => $this->is_paid,
             'status' => $this->status,
-            'location' => $this->product?->location,
-            'supplier' => $this->product?->supplier,
+            'suppliers' => ProductSuppliersResource::collection($this->product?->suppliers),
             'delegate' => $this->delegate,
             'quantity' =>  $quantity,
             'rest_quantity' => $quantity - $this->purchases->where('status','!=', 'under_review')->sum('quantity'),
             'total_cost' => $this->products->sum('total_amount'),
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at
+            'created_at' => date('Y-m-d H:i', strtotime($this->created_at)),
+            'updated_at' => date('Y-m-d H:i', strtotime($this->updated_at)),
         ];
     }
 }

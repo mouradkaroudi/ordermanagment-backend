@@ -23,8 +23,6 @@ class ProductResource extends JsonResource
             $image = $this->image->storage_type == 'local' ? asset($this->image->resource) : $this->image->resource;
         }
 
-        $suppliers = [];
-
         return [
             'id' => $this->id,
             'ref' => $this->ref,
@@ -35,7 +33,6 @@ class ProductResource extends JsonResource
             'cost' => $this->cost,
             'is_paid' => $this->is_paid,
             'suppliers' => ProductSuppliersResource::collection($this->suppliers),
-            'location' => $this->location,
             'category' => $this->category,
         ];
     }

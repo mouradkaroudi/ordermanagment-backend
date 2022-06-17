@@ -2,8 +2,6 @@
 
 namespace App\Http\Resources;
 
-use App\Models\PurchaseOrder;
-use App\Models\User;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class PurchaseResource extends JsonResource
@@ -32,8 +30,11 @@ class PurchaseResource extends JsonResource
             ],
             'quantity' => $this->quantity,
             'status' => $this->status,
-            'missing_quantity' => $this->missing_quantity,
-            'reviewer' => $reviewer
+            'inventory_quantity' => $this->inventory_quantity,
+            'is_from_warehouse' => $this->is_from_warehouse,
+            'reviewer' => $reviewer,
+            'created_at' => date('Y-m-d H:i', strtotime($this->created_at)),
+            'updated_at' => date('Y-m-d H:i', strtotime($this->updated_at)),
         ];
     }
 }

@@ -23,8 +23,8 @@ return new class extends Migration
                 'sent', // Sent order to a delegate 
                 'purchased', // Order purchased with full quantity
                 'uncompleted_quantity', // Order purchased with partial quantity
-                ]
-            )->nullable();
+                'unavailable_quantity' // The quantity is not available in the market
+            ])->nullable();
             $table->timestamps();
         });
     }

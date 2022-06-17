@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\PurchasePutRequest;
 use App\Http\Requests\PurchaseRequest;
 use App\Http\Resources\PurchaseResource;
+use App\Models\Order;
 use App\Models\Purchase;
 use Illuminate\Http\Request;
 
@@ -29,7 +30,7 @@ class PurchaseController extends Controller
     public function index()
     {
         $request = request()->all();
-
+        //TODO: Fix pagination
         return PurchaseResource::collection(Purchase::filter($request)->latest()->paginate(1000));
     }
 
@@ -46,13 +47,22 @@ class PurchaseController extends Controller
 
         $order_id =  $request->input('order_id');
         $quantity =  $request->input('quantity');
-
+        $is_from_warehouse = $request->input('is_from_warehouse', false);
         $delegate_id =  $request->user()->id;
+
+        // get quantity from orders table
+        $order = Order::find($order_id);
+        $ordered_quantity = $order->products->sum('quantity');
+
+        if ($quantity > $ordered_quantity) {
+            return response('', 400);
+        }
 
         $purchase = Purchase::create([
             'order_id' => $order_id,
             'delegate_id' => $delegate_id,
-            'quantity' => $quantity
+            'quantity' => $quantity,
+            'is_from_warehouse' => $is_from_warehouse
         ]);
 
         return response()->json($purchase);
@@ -81,18 +91,21 @@ class PurchaseController extends Controller
         $request->validated();
 
         $order_id = $request->input('order_id');
-        $recieved_quantity = $request->input('quantity');
+        $inventory_quantity = $request->input('quantity');
 
-        $quantity = $purchase->quantity;
+        $status = 'completed';
 
-        $missing_quantity = $quantity - $recieved_quantity;
+        if($inventory_quantity > $purchase->quantity) {
+            $status = 'excessive_amount';
+        }else if($inventory_quantity < $purchase->quantity) {
+            $status = 'missing_quantity';
+        }
 
-        $status = $missing_quantity == 0 ? 'completed' : 'missing_quantity';
         $purchase->update([
             'order_id' => $order_id,
-            'quantity' => $quantity,
+            //'quantity' => $quantity,
             'status' => $status,
-            'missing_quantity' => $missing_quantity,
+            'inventory_quantity' => $inventory_quantity,
             'reviewier_id' => request()->user()->id
         ]);
 
@@ -140,7 +153,7 @@ class PurchaseController extends Controller
             'status' => 'completed',
             'return_invoice_id' => $invoice_id
         ]);
-        
+
         return response()->json([], 200);
     }
 }

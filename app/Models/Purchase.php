@@ -19,7 +19,8 @@ class Purchase extends Model
         'delegate_id',
         'quantity',
         'status',
-        'missing_quantity',
+        'inventory_quantity',
+        'is_from_warehouse',
         'return_invoice_id',
         'reviewier_id'
     ];

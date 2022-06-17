@@ -51,7 +51,6 @@ class ProductRequest extends FormRequest
             'image_id' => ['sometimes', 'exists:App\Models\File,id'],
             'mainRef' => ['nullable', 'string'],
             'suppliers.*.supplier_id' => ['sometimes', 'exists:App\Models\Supplier,id'],
-            'location_id' => ['sometimes', 'exists:App\Models\Location,id'],
             'category_id' => ['sometimes', 'exists:App\Models\Category,id'],
             'cost' => ['required', 'numeric', 'gt:0'],
             'is_paid' => ['sometimes', 'bool']

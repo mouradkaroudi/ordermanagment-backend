@@ -18,9 +18,10 @@ return new class extends Migration
             $table->integer('order_id'); // Foreign key to orders table 
             $table->integer('delegate_id');
             $table->integer('quantity'); //
-            $table->enum('status', ['under_review', 'completed', 'missing_quantity'])->default('under_review');
-            $table->integer('missing_quantity')->default(0);
+            $table->enum('status', ['under_review', 'completed', 'missing_quantity', 'excessive_amount'])->default('under_review');
+            $table->integer('inventory_quantity')->nullable();
             $table->string('return_invoice_id')->nullable();
+            $table->boolean('is_from_warehouse')->default(false);
             $table->integer('reviewier_id')->nullable(); // user who reviewed the purchase
             $table->timestamps();
         });
