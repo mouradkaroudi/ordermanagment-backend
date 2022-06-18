@@ -165,11 +165,10 @@ class OrderController extends Controller
         foreach ($query_orders as $query_order) {
 
             // convert ref to lowercase
-            $query_order['ref'] = strtolower($query_order['ref']);
+            $query_order['ref'] =  trim(strtolower($query_order['ref']));
 
             $map_orders_by_ref[$query_order['ref']] = $query_order;
         }
-
         foreach ($orders as $key => $order) {
             $orders[$key]['product_id'] = $map_orders_by_ref[$order['ref']]['id'];
             $orders[$key]['product_cost'] = $map_orders_by_ref[$order['ref']]['cost'];
