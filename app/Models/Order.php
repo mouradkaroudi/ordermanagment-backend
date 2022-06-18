@@ -42,11 +42,13 @@ class Order extends Model
         return $this->hasMany(OrderProduct::class, 'order_id', 'id');
     }
 
-    public function product() {
+    public function product()
+    {
         return $this->hasOne(Product::class, 'id', 'product_id');
     }
 
-    public function delegate() {
+    public function delegate()
+    {
         return $this->hasOne(User::class, 'id', 'delegate_id');
     }
 
@@ -70,15 +72,25 @@ class Order extends Model
         }
 
         if (isset($filters['supplier'])) {
-            $query->whereRelation('product', 'supplier_id',$filters['supplier']);
+
+            $query->whereHas('product', function ($query) use ($filters) {
+                $query->whereRelation('suppliers', 'supplier_id', $filters['supplier']);
+            });
         }
 
         if (isset($filters['location'])) {
-            $query->whereRelation('product', 'location_id',$filters['location']);
-        }
         
+            $suppliers = Supplier::where('location_id', '=',$filters['location'])->pluck('id')->toArray();
+
+            $query->whereHas('product', function ($query) use ($suppliers) {
+                $query->whereHas('suppliers', function ($query) use ($suppliers) {
+                    $query->whereIn('supplier_id', $suppliers);
+                });
+            });
+        }
+
         if (isset($filters['delegate'])) {
-            $query->where('delegate_id',$filters['delegate']);
+            $query->where('delegate_id', $filters['delegate']);
         }
     }
 }

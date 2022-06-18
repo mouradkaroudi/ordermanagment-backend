@@ -110,7 +110,7 @@ class ProductController extends Controller
         $fields = $request->validated();
 
         //convert ref to lowercase
-        $fields['ref'] = strtolower($fields['ref']);
+        $fields['ref'] = trim(strtolower($fields['ref']));
 
         if ($product->update($fields)) {
             if (isset($fields['suppliers']) && is_array($fields['suppliers'])) {
