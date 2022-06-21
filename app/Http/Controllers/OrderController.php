@@ -29,8 +29,17 @@ class OrderController extends Controller
     public function index()
     {
         $request = request()->all();
+        $per_page = $request['per_page'] ?? 50;
 
-        return OrderResource::collection(Order::filter($request)->latest()->orderBy('id', 'desc')->paginate());
+        $query = Order::filter($request)->orderBy('updated_at', 'desc');
+
+        if ($per_page == -1) {
+            $query = $query->get();
+        } else {
+            $query = $query->paginate($per_page);
+        }
+
+        return OrderResource::collection($query);
     }
 
     /**
@@ -82,7 +91,7 @@ class OrderController extends Controller
         $status = $request->input('status');
         $orders = $request->input('orders');
 
-        if(!empty($orders)) {
+        if (!empty($orders)) {
             $processed_orders = $this->processOrders($orders);
             $order->products()->createMany($processed_orders[$order->product_id]['products']);
         }
@@ -92,14 +101,12 @@ class OrderController extends Controller
                 'status' => $status
             ]);
 
-            if(!$update) {
+            if (!$update) {
                 response()->json([
                     'message' => 'Something went wrong.'
                 ], 400);
             }
         }
-
-
     }
 
     /**
@@ -146,7 +153,7 @@ class OrderController extends Controller
         $orders_ids = $request->input('orders');
         $delegate_id = $request->input('delegate_id');
 
-        
+
         Order::whereIn('id', $orders_ids)->update(['status' => 'sent', 'delegate_id' => $delegate_id]);
 
         return response()->json([], 200);
@@ -154,7 +161,8 @@ class OrderController extends Controller
 
     //
 
-    private function processOrders( $orders ) {
+    private function processOrders($orders)
+    {
 
         $query_orders = Product::whereIn('ref', array_map(function ($a) {
             return $a['ref'];
@@ -201,7 +209,5 @@ class OrderController extends Controller
         }
 
         return $processed_orders;
-
     }
-
 }

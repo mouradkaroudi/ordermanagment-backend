@@ -16,7 +16,18 @@ class StoreController extends Controller
      */
     public function index()
     {
-        return (new StoreCollection(Store::latest()->paginate()));
+        $request = request()->all();
+        $per_page = $request['per_page'] ?? 50;
+
+        $query = Store::latest();
+
+        if ($per_page == -1) {
+            $query = $query->get();
+        } else {
+            $query = $query->paginate($per_page);
+        }
+
+        return (new StoreCollection($query));
     }
 
     /**

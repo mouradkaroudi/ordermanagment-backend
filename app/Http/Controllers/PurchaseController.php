@@ -30,8 +30,18 @@ class PurchaseController extends Controller
     public function index()
     {
         $request = request()->all();
-        //TODO: Fix pagination
-        return PurchaseResource::collection(Purchase::filter($request)->latest()->paginate(1000));
+
+        $per_page = $request['per_page'] ?? 50;
+
+        $query = Purchase::filter($request)->latest();
+
+        if ($per_page == -1) {
+            $query = $query->get();
+        } else {
+            $query = $query->paginate($per_page);
+        }
+
+        return PurchaseResource::collection($query);
     }
 
     /**

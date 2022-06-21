@@ -15,4 +15,9 @@ class Category extends Model
      * @var array
      */
     protected $fillable = ['name', 'commission'];
+
+    public function scopeFilter($query, $filters) {
+        
+    }
+
 }

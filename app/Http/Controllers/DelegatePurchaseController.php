@@ -17,8 +17,8 @@ class DelegatePurchaseController extends Controller
     {
         $request = request()->all();
         $user_id = request()->user()->id;
-
-        return PurchaseResource::collection(Purchase::where('delegate_id', $user_id)->filter($request)->latest()->paginate(1000));
+        
+        return PurchaseResource::collection(Purchase::where('delegate_id', $user_id)->filter($request)->latest()->get());
 
     }
 

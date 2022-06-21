@@ -16,7 +16,19 @@ class LocationController extends Controller
      */
     public function index()
     {
-        return (new LocationCollection(Location::latest()->paginate()));
+        $request = request()->all();
+
+        $per_page = $request['per_page'] ?? 50;
+
+        $query = Location::latest();
+
+        if ($per_page == -1) {
+            $query = $query->get();
+        } else {
+            $query = $query->paginate($per_page);
+        }
+
+        return (new LocationCollection($query));
     }
 
     /**

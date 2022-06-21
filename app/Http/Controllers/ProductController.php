@@ -34,8 +34,17 @@ class ProductController extends Controller
     {
 
         $request = request()->all();
+        $per_page = $request['per_page'] ?? 50;
 
-        return (new ProductCollection(Product::filter($request)->latest()->paginate(50)));
+        $query = Product::filter($request)->latest();
+
+        if ($per_page == -1) {
+            $query = $query->get();
+        } else {
+            $query = $query->paginate($per_page);
+        }
+
+        return (new ProductCollection($query));
     }
 
     /**

@@ -17,13 +17,14 @@ class SupplierController extends Controller
     public function index()
     {
         $request = request()->all();
+        $per_page = $request['per_page'] ?? 50;
 
         $query = Supplier::filter($request)->latest();
 
-        if(isset($request['per_page']) && $request['per_page'] == -1) {
+        if ($per_page == -1) {
             $query = $query->get();
-        }else{
-            $query = $query->paginate();
+        } else {
+            $query = $query->paginate($per_page);
         }
 
         return (new SupplierCollection($query));

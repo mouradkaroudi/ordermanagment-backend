@@ -16,8 +16,9 @@ class DelegateOrderController extends Controller
     public function index()
     {
         $user_id = request()->user()->id;
-
-        $query = Order::where('delegate_id', $user_id)->whereIn('status',['sent', 'uncompleted_quantity'])->latest()->orderBy('id', 'desc');
+        $request = request()->all();
+        
+        $query = Order::where('delegate_id', $user_id)->filter($request)->whereIn('status',['sent', 'uncompleted_quantity'])->orderBy('updated_at', 'desc');
 
         return DelegateOrderResource::collection($query->get());
 

@@ -72,9 +72,13 @@ class Order extends Model
         }
 
         if (isset($filters['supplier'])) {
+            
+            $suppliers = Supplier::where('name', 'like', '%'. $filters['supplier'].'%')->pluck('id')->toArray();
 
-            $query->whereHas('product', function ($query) use ($filters) {
-                $query->whereRelation('suppliers', 'supplier_id', $filters['supplier']);
+            $query->whereHas('product', function ($query) use ($suppliers) {
+                $query->whereHas('suppliers', function($query) use ($suppliers) {
+                    $query->whereIn('supplier_id', $suppliers);
+                });
             });
         }
 

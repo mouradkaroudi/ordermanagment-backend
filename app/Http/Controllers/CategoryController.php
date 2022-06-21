@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\CategoryCollection;
 use App\Http\Resources\CategoryResource;
 use App\Models\Category;
 use Illuminate\Http\Request;
@@ -16,7 +15,18 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        return (new CategoryCollection(Category::latest()->paginate()));
+        $request = request()->all();
+        $per_page = $request['per_page'] ?? 50;
+
+        $query = Category::latest();
+
+        if ($per_page == -1) {
+            $query = $query->get();
+        } else {
+            $query = $query->paginate($per_page);
+        }
+
+        return CategoryResource::collection($query);
     }
 
     /**

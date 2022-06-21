@@ -60,7 +60,7 @@ class Purchase extends Model
     {
         return $this->hasOne(Order::class, 'id', 'order_id');
     }
-
+    
     public function delegate()
     {
         return $this->hasOne(User::class, 'id', 'delegate_id');
@@ -80,12 +80,26 @@ class Purchase extends Model
      */
 
     public function scopeFilter($query, $filters)
-    {   
+    {
         // if status not passed we return only completed and under_review purchases
         if (isset($filters['status'])) {
             $query->where('status', '=', $filters['status']);
-        }else{
-            $query->whereIn('status', ['completed', 'under_review']);
+        } else {
+            $query->whereIn('status', ['under_review']);
+        }
+
+        if (isset($filters['supplier'])) {
+
+            $suppliers = Supplier::where('name', 'like', '%' . $filters['supplier'] . '%')->pluck('id')->toArray();
+
+
+            $query->whereHas('order', function ($query) use ($suppliers) {
+                $query->whereHas('product', function ($query) use ($suppliers) {
+                    $query->whereHas('suppliers', function ($query) use ($suppliers) {
+                        $query->whereIn('supplier_id', $suppliers);
+                    });
+                });
+            });
         }
     }
 }

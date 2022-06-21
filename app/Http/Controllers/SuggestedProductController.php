@@ -27,6 +27,7 @@ class SuggestedProductController extends Controller
      */
     public function index()
     {
+        // TODO: fix pagination
         $request = request();
 
         $query = SuggestedProduct::filter($request->all());

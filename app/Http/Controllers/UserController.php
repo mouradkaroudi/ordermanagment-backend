@@ -31,7 +31,18 @@ class UserController extends Controller
     public function index()
     {
         $request = request()->all();
-        return (new UserCollection(User::filter($request)->latest()->paginate()));
+
+        $per_page = $request['per_page'] ?? 50;
+
+        $query = User::filter($request)->latest();
+
+        if ($per_page == -1) {
+            $query = $query->get();
+        } else {
+            $query = $query->paginate($per_page);
+        }
+        
+        return (new UserCollection($query));
     }
 
     /**
