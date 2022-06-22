@@ -165,7 +165,7 @@ class OrderController extends Controller
     {
 
         $query_orders = Product::whereIn('ref', array_map(function ($a) {
-            return $a['ref'];
+            return trim(strtolower($a['ref']));
         }, $orders))->get();
 
         $map_orders_by_ref = [];
@@ -178,6 +178,9 @@ class OrderController extends Controller
             $map_orders_by_ref[$query_order['ref']] = $query_order;
         }
         foreach ($orders as $key => $order) {
+
+            $order['ref'] =  trim(strtolower($order['ref']));
+
             $orders[$key]['product_id'] = $map_orders_by_ref[$order['ref']]['id'];
             $orders[$key]['product_cost'] = $map_orders_by_ref[$order['ref']]['cost'];
             $orders[$key]['is_paid'] = $map_orders_by_ref[$order['ref']]['is_paid'];
