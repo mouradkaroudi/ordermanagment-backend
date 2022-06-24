@@ -34,7 +34,7 @@ class SuggestedProductRequest extends FormRequest
             'sell_price' => 'required_without:is_local|nullable|numeric',
             'sku' => 'required_without:is_local|nullable|string',
             // if product is from a local market
-            'cost' => ['required_if:is_local,true', 'numeric']
+            'cost' => ['required_if:is_local,true', 'nullable', 'numeric']
         ];
     }
 }
