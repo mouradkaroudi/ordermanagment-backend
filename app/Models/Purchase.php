@@ -88,6 +88,20 @@ class Purchase extends Model
             $query->whereIn('status', ['under_review']);
         }
 
+
+
+        if (isset($filters['product_ref_sku'])) {
+
+            $ref_sku = $filters['product_ref_sku'];
+
+            $query->whereHas('order', function ($query) use ($ref_sku) {
+                $query->whereHas('product', function ($query) use ($ref_sku) {
+                    $query->where('ref', 'like', '%'.$ref_sku.'%')->orWhere('sku', 'like', '%'.$ref_sku.'%');
+                });
+            });
+
+        }
+
         if (isset($filters['supplier'])) {
 
             $suppliers = Supplier::where('name', 'like', '%' . $filters['supplier'] . '%')->pluck('id')->toArray();
