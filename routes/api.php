@@ -44,9 +44,12 @@ Route::middleware(['auth:sanctum'])->group(function () {
     
     Route::get('/account', [AccountController::class, 'index']);
     Route::post('/account', [AccountController::class, 'update']);
+    Route::post('/account-fcm-token', [AccountController::class, 'updateFcmToken']);
 
     Route::put('/orders/assign-delegate', [OrderController::class, 'assignDelegate']);
     Route::put('/purchases/{purchase}/status', [PurchaseController::class, 'status']);
+
+    Route::get('delegate/orders/suppliers', [DelegateOrderController::class, 'suppliers']);
     
     Route::post('/suggested-products/{id}/accept', [SuggestedProductController::class, 'accept']);
 

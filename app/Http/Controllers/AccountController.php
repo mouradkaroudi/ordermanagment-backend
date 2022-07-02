@@ -82,4 +82,24 @@ class AccountController extends Controller
 
     }
 
+    public function updateFcmToken(Request $request) {
+        
+        $user = Auth::user();
+
+        $token = $request->input('token');
+
+        $update = User::where('id', $user->id)->update([
+            'fcm_token' => $token
+        ]);
+
+        if($update) {
+            return response('', 200);
+        }
+        
+        return response()->json([
+            'message' => 'Something went wrong.'
+        ], 400);
+
+    }
+
 }

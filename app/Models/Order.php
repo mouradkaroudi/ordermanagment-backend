@@ -82,6 +82,17 @@ class Order extends Model
             });
         }
 
+        if (isset($filters['supplier_id']) && !empty($filters['supplier_id']) && $filters['supplier_id'] != 0) {
+
+            $supplier_id = $filters['supplier_id'];
+
+            $query->whereHas('product', function ($query) use ($supplier_id) {
+                $query->whereHas('suppliers', function($query) use ($supplier_id) {
+                    $query->where('supplier_id', '=', $supplier_id);
+                });
+            });
+        }
+
         if (isset($filters['location'])) {
         
             $suppliers = Supplier::where('location_id', '=',$filters['location'])->pluck('id')->toArray();

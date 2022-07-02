@@ -34,4 +34,5 @@ class DelegatePurchaseController extends Controller
         //
     }
 
+
 }

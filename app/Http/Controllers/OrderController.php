@@ -6,7 +6,9 @@ use App\Http\Requests\OrderRequest;
 use App\Http\Resources\OrderResource;
 use App\Models\Order;
 use App\Models\Product;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 
 class OrderController extends Controller
 {
@@ -153,6 +155,26 @@ class OrderController extends Controller
         $orders_ids = $request->input('orders');
         $delegate_id = $request->input('delegate_id');
 
+        $user = User::where('id', $delegate_id)->first();
+
+        if($user->fcm_token) {
+
+            $fcm_token = json_decode($user->fcm_token);
+
+            $notification = [
+                'notification' => [
+                    'title' => 'وصلتك طلبات جديدة من الإدارة',
+                ],
+                'registration_ids' => [$fcm_token->token]
+            ];
+
+            $response = Http::withHeaders([
+                'content-type' => 'application/json',
+                'authorization' => 'key=AAAAUPHtdJM:APA91bGD6C3VtLauKkxnJrbXnmvbRl13ggPwtLeHyWZPyn3MYOXkWNxtHm-6OSHV1eSQLgYYV9oUCnmzNEBOprrev0OCK6X1zZpT6jvWy1-mAgjNrYQl4SRo3_npo_AyjO3y2N-sYQc9'
+            ])->withBody(json_encode($notification),'application/json')->post('https://fcm.googleapis.com/fcm/send');
+            
+
+        }
 
         Order::whereIn('id', $orders_ids)->update(['status' => 'sent', 'delegate_id' => $delegate_id]);
 

@@ -33,6 +33,7 @@ class Supplier extends Model
         if (isset($filters['name']) && !empty($filters['name'])) {
             $query->where('name', 'like', '%' .$filters['name'] . '%');
         }
+
     }
 
 }
