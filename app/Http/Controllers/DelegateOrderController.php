@@ -19,9 +19,10 @@ class DelegateOrderController extends Controller
         $user_id = request()->user()->id;
         $request = request()->all();
         
-        $query = Order::where('delegate_id', $user_id)->filter($request)->whereIn('status',['sent', 'uncompleted_quantity'])->orderBy('updated_at', 'desc');
+        $query = Order::filter($request)->where('delegate_id', $user_id)->whereIn('status',['sent', 'uncompleted_quantity'])->orderBy('updated_at', 'desc');
+        $query = $query->get();
 
-        return DelegateOrderResource::collection($query->get());
+        return DelegateOrderResource::collection($query);
 
     }
 
@@ -30,8 +31,9 @@ class DelegateOrderController extends Controller
      */
     public function suppliers() {
         $user_id = request()->user()->id;
-
-        $orders = Order::where('delegate_id', $user_id)->whereIn('status',['sent', 'uncompleted_quantity'])->get()->toArray();
+        $request = request()->all();
+        
+        $orders = Order::filter($request)->where('delegate_id', $user_id)->whereIn('status',['sent', 'uncompleted_quantity'])->get()->toArray();
 
         $products_ids = array_unique(array_map(function($a) {
             return $a['product_id'];
@@ -44,8 +46,8 @@ class DelegateOrderController extends Controller
         foreach( $products as $product ) {
             $suppliers = $product['suppliers'];
             foreach( $suppliers as $supplier ) {
-                if(!in_array($supplier['id'], $suppliers_ids)) {
-                    $suppliers_ids[] = $supplier['id'];
+                if(!in_array($supplier['supplier_id'], $suppliers_ids)) {
+                    $suppliers_ids[] = $supplier['supplier_id'];
                 }
             }
         }

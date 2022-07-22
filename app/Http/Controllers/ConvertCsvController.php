@@ -34,7 +34,14 @@ class ConvertCsvController extends Controller
         $file_path = public_path($file['resource']);
         $theArray = Excel::toArray([], $file_path)[0];
 
-        $new_csv = [];
+        $new_csv = [[
+            "Item No",
+            "qty",
+            "price",
+            "item_status",
+            "sku",
+            "Partner_sku"
+        ]];
 
         for($i=1; $i<=count($theArray); $i++) {
 
@@ -43,9 +50,9 @@ class ConvertCsvController extends Controller
             }
 
             $sku = $theArray[$i][3];
-            $cost = $theArray[$i][64];
+            $cost = $theArray[$i][65] / 1.15;
             $itemStatus = $theArray[$i][10];
-
+            $partner_sku = $theArray[$i][1];
             if(!empty($sku)) {
                 $product = Product::where('sku', $sku)->first();
                 if(!empty($product)) {
@@ -57,7 +64,8 @@ class ConvertCsvController extends Controller
                         1,
                         $cost,
                         $itemStatus,
-                        $sku
+                        $sku,
+                        $partner_sku
                     ];
                 } 
             }
