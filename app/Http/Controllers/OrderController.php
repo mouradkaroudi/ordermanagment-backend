@@ -4,11 +4,17 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\OrderRequest;
 use App\Http\Resources\OrderResource;
+use App\Models\File;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\User;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Date;
+use Illuminate\Support\Facades\File as FacadesFile;
 use Illuminate\Support\Facades\Http;
+use Maatwebsite\Excel\Facades\Excel;
 
 class OrderController extends Controller
 {
@@ -157,7 +163,7 @@ class OrderController extends Controller
 
         $user = User::where('id', $delegate_id)->first();
 
-        if($user->fcm_token) {
+        if ($user->fcm_token) {
 
             $fcm_token = json_decode($user->fcm_token);
 
@@ -171,14 +177,106 @@ class OrderController extends Controller
             $response = Http::withHeaders([
                 'content-type' => 'application/json',
                 'authorization' => 'key=AAAAUPHtdJM:APA91bGD6C3VtLauKkxnJrbXnmvbRl13ggPwtLeHyWZPyn3MYOXkWNxtHm-6OSHV1eSQLgYYV9oUCnmzNEBOprrev0OCK6X1zZpT6jvWy1-mAgjNrYQl4SRo3_npo_AyjO3y2N-sYQc9'
-            ])->withBody(json_encode($notification),'application/json')->post('https://fcm.googleapis.com/fcm/send');
-            
-
+            ])->withBody(json_encode($notification), 'application/json')->post('https://fcm.googleapis.com/fcm/send');
         }
 
         Order::whereIn('id', $orders_ids)->update(['status' => 'sent', 'delegate_id' => $delegate_id]);
 
         return response()->json([], 200);
+    }
+
+    public function import(Request $request)
+    {
+
+        $request->validate([
+            'file_id' => ['required', 'exists:App\Models\File,id'],
+            'store_id' => ['required', 'exists:App\Models\Store,id']
+        ]);
+
+        $file_id = $request->input('file_id');
+        $store_id = $request->input('store_id');
+
+        $file = File::where('id', $file_id)->first();
+
+        $file_path = public_path($file['resource']);
+        $theArray = Excel::toArray([], $file_path)[0];
+
+        $orders = [];
+
+        $invalid_products = [];
+
+        foreach ($theArray as $order) {
+
+            $product = Product::where('ref', $order[0])->first();
+
+            if (!isset($product->id)) {
+                $invalid_products[] = [
+                    'ref' => $order[0],
+                    'quantity' => $order[1],
+                    'issue' => 'Product not exist'
+                ];
+                continue;
+            } else if ($product->cost == 0) {
+                $invalid_products[] = [
+                    'ref' => $order[0],
+                    'quantity' => $order[1],
+                    'issue' => 'Cost must be greater than 0'
+                ];
+                continue;
+            }
+
+            $orders[] = [
+                'ref' => $order[0],
+                'quantity' => $order[1],
+                'store_id' => $store_id
+            ];
+        }
+
+        $failed_import_file_path = '';
+
+        if (count($invalid_products) > 0) {
+
+            $file_name = 'import-issue-' . Carbon::now()->format('Y-m-d-H-i-s') . '.xlsx';
+
+            $new_csv = [];
+
+            foreach ($invalid_products as $invalid_product) {
+                $new_csv[] = [
+                    $invalid_product['ref'],
+                    $invalid_product['quantity'],
+                    $invalid_product['issue']
+                ];
+            }
+
+            $csv = (new Collection($new_csv))->storeExcel(
+                $file_name,
+                'public',
+            );
+
+            if ($csv) {
+
+                if (FacadesFile::delete($file_path)) {
+                    File::where('id', $file_id)->delete();
+                }
+                $failed_import_file_path = asset('storage/' . $file_name);
+            }
+        }
+
+        $processed_orders = $this->processOrders($orders);
+
+        foreach ($processed_orders as $processed_order) {
+            $order = Order::create($processed_order);
+            $order->products()->createMany($processed_order['products']);
+        }
+
+        $response = [
+            'message' => 'Imported successfully',
+            'failed_imports' => count($invalid_products),
+            'failed_import_file' => $failed_import_file_path
+        ];
+
+        return response()->json($response);
+
     }
 
     //

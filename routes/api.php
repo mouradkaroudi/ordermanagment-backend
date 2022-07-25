@@ -47,6 +47,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/account-fcm-token', [AccountController::class, 'updateFcmToken']);
 
     Route::put('/orders/assign-delegate', [OrderController::class, 'assignDelegate']);
+    Route::post('/orders/import', [OrderController::class, 'import']);
+
     Route::put('/purchases/{purchase}/status', [PurchaseController::class, 'status']);
 
     Route::get('delegate/orders/suppliers', [DelegateOrderController::class, 'suppliers']);
