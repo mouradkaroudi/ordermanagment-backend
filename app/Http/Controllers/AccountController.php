@@ -38,8 +38,10 @@ class AccountController extends Controller
             'name' => ['sometimes'],
             'username' => ['sometimes', Rule::unique('users')->ignore($user->id)],
             'email' => ['sometimes', Rule::unique('users')->ignore($user->id)],
-            'currentPwd' => ['sometimes', function($input) {
-                return Hash::check($input, Auth::user()->password);
+            'currentPwd' => ['sometimes', function($attribute, $value, $fail) {
+                if(!Hash::check($value, Auth::user()->password)) {
+                    return $fail(__('The current password is incorrect.'));
+                }
             }],
             'newPwd' => ['sometimes', 'min:6'],
             'confirmNewPwd' => ['required_with:newPwd', 'same:newPwd'],
