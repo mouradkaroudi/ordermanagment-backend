@@ -36,7 +36,6 @@ class Order extends Model
         });*/
     }
 
-
     public function products()
     {
         return $this->hasMany(OrderProduct::class, 'order_id', 'id');
@@ -44,7 +43,7 @@ class Order extends Model
 
     public function product()
     {
-        return $this->hasOne(Product::class, 'id', 'product_id');
+        return $this->hasOne(Product::class, 'id', 'product_id')->withTrashed();
     }
 
     public function delegate()
@@ -79,6 +78,12 @@ class Order extends Model
                 $query->whereHas('suppliers', function($query) use ($suppliers) {
                     $query->whereIn('supplier_id', $suppliers);
                 });
+            });
+        }
+
+        if(isset($filters['product_ref_sku'])) {
+            $query->whereHas('product', function ($query) use ($filters) {
+                $query->where('ref', 'like', '%'.$filters['product_ref_sku'].'%')->orWhere('sku', 'like', '%'.$filters['product_ref_sku'].'%');
             });
         }
 

@@ -91,4 +91,13 @@ class OrderPolicy
     {
         //
     }
+
+    public function destroyMany(User $user) {
+        return $user->tokenCan('manage:orders');
+    }
+
+    public function updateMany(User $user) {
+        return $user->tokenCan('manage:orders');
+    }
+
 }

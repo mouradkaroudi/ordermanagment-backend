@@ -29,6 +29,19 @@ class OrderController extends Controller
         $this->authorizeResource(Order::class, 'order');
     }
 
+    protected function resourceMethodsWithoutModels()
+    {
+        return array_merge(parent::resourceMethodsWithoutModels(), ['destroyMany', 'updateMany']);
+    }
+
+    protected function resourceAbilityMap()
+    {
+        return array_merge(parent::resourceAbilityMap(), [
+            'destroyMany' => 'destroyMany',
+            'updateMany' => 'updateMany'
+        ]);
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -123,8 +136,9 @@ class OrderController extends Controller
      * @param  \App\Models\Order  $order
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Order $order)
+    public function destroy(Order $order, Request $request)
     {
+
         if ($order->delete()) {
 
             // When delete a order, we need also to delete purchase orders linked to that order
@@ -141,6 +155,41 @@ class OrderController extends Controller
     //
     // Custom api endpoints
     //
+
+    public function updateMany( Request $request ) {
+        
+        $ids = $request->input('ids');
+        $status = $request->input('status');
+
+        if(empty($ids) || empty($status)) {
+            return response()->json([
+                'message' => 'Something went wrong.'
+            ], 400);
+        }
+
+        $query = Order::whereIn('id', $ids)->update([
+            'status' => $status
+        ]);
+
+        return response('', 200);
+
+    }
+
+    public function destroyMany(Request $request)
+    {
+
+        $ids = $request->input('ids');
+
+        if (empty($ids)) {
+            return response()->json([
+                'message' => 'Something went wrong.'
+            ], 400);
+        }
+
+        Order::destroy($ids);
+
+        return response('', 200);
+    }
 
     /**
      * Update order(s) delegate
@@ -276,7 +325,6 @@ class OrderController extends Controller
         ];
 
         return response()->json($response);
-
     }
 
     //

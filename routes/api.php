@@ -48,6 +48,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
     Route::put('/orders/assign-delegate', [OrderController::class, 'assignDelegate']);
     Route::post('/orders/import', [OrderController::class, 'import']);
+    Route::delete('/orders/destroyMany', [OrderController::class, 'destroyMany']);
+    Route::put('/orders/updateMany', [OrderController::class, 'updateMany']);
 
     Route::put('/purchases/{purchase}/status', [PurchaseController::class, 'status']);
 
