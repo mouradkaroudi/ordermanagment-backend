@@ -14,6 +14,7 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\OrderProductsController;
 use App\Http\Controllers\OrderTrackingController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ProductListingIssueController;
 use App\Http\Controllers\ProductSuppliersController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\StatisticsInsightController;
@@ -22,6 +23,8 @@ use App\Http\Controllers\SuggestedProductController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VerifyProduct;
+use App\Http\Resources\ProductListingIssueResource;
+use App\Models\ProductListingIssue;
 use App\Models\ProductSuppliers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
@@ -50,14 +53,20 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/orders/import', [OrderController::class, 'import']);
     Route::delete('/orders/destroyMany', [OrderController::class, 'destroyMany']);
     Route::put('/orders/updateMany', [OrderController::class, 'updateMany']);
+    
+    Route::put('/orders/{order}/unavailable-quantity', [OrderController::class, 'unavailableQuantity']);
 
     Route::put('/purchases/{purchase}/status', [PurchaseController::class, 'status']);
 
     Route::get('delegate/orders/suppliers', [DelegateOrderController::class, 'suppliers']);
     
     Route::post('/suggested-products/{id}/accept', [SuggestedProductController::class, 'accept']);
-
+    
     Route::post('/convert-csv', ConvertCsvController::class);
+
+    Route::get('/issue-products', [ProductListingIssueController::class, 'index']);
+    Route::post('/issue-products/{product_listing_issue}/resolved', [ProductListingIssueController::class, 'resolved']);
+    
 
     Route::apiResources([
         'stores' => StoreController::class,

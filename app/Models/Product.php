@@ -24,6 +24,7 @@ class Product extends Model
         'category_id',
         'cost',
         'is_paid',
+        'is_available'
     ];
 
     public function suppliers()

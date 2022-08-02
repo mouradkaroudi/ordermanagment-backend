@@ -50,7 +50,7 @@ class OrderController extends Controller
     public function index()
     {
         $request = request()->all();
-        $per_page = $request['per_page'] ?? 50;
+        $per_page = $request['per_page'] ?? 200;
 
         $query = Order::filter($request)->orderBy('updated_at', 'desc');
 
@@ -111,16 +111,25 @@ class OrderController extends Controller
 
         $status = $request->input('status');
         $orders = $request->input('orders');
+        $delegate_id = $request->input('delegate_id');
 
         if (!empty($orders)) {
             $processed_orders = $this->processOrders($orders);
             $order->products()->createMany($processed_orders[$order->product_id]['products']);
         }
 
-        if (!empty($status)) {
-            $update = $order->update([
-                'status' => $status
-            ]);
+        $update_fields = [];
+
+        if(!empty($status)) {
+            $update_fields['status'] = $status;
+        }
+
+        if(!empty($delegate_id) && $delegate_id != $order->delegate_id) {
+            $update_fields['delegate_id'] = $delegate_id;
+        }
+
+        if (!empty($update_fields)) {
+            $update = $order->update($update_fields);
 
             if (!$update) {
                 response()->json([
@@ -155,6 +164,22 @@ class OrderController extends Controller
     //
     // Custom api endpoints
     //
+
+    public function unavailableQuantity( Order $order, Request $request ) {
+        
+        if( is_null($order->status) || $order->status === 'purchased' ) {
+            return response()->json([
+                'message' => 'Something went wrong.'
+            ], 400);
+        }
+
+        $order->update([
+            'status' => 'unavailable_quantity'
+        ]);
+
+        return response('', 200);
+
+    }
 
     public function updateMany( Request $request ) {
         
@@ -272,6 +297,12 @@ class OrderController extends Controller
                     'issue' => 'Cost must be greater than 0'
                 ];
                 continue;
+            }else if ( !$product->is_available ) {
+                $invalid_products[] = [
+                    'ref' => $order[0],
+                    'quantity' => $order[1],
+                    'issue' => 'This product marked as unavailable in the market'
+                ];
             }
 
             $orders[] = [

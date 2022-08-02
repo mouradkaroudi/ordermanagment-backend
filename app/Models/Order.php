@@ -5,6 +5,7 @@ namespace App\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class Order extends Model
 {
@@ -30,6 +31,18 @@ class Order extends Model
      */
     protected static function booted()
     {
+        static::updated(function ($order) {
+            if($order->status === 'unavailable_quantity') {
+
+                $user = Auth::user();
+
+                ProductListingIssue::create([
+                    'product_id' => $order->product_id,
+                    'created_by' => $user->id,
+                    'created_at' => Carbon::now()
+                ]);
+            }
+        });
         /*
         static::deleted(function ($order) {
             $order->purchase_order()->delete();
