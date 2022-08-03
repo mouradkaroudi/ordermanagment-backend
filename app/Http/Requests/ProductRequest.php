@@ -53,7 +53,8 @@ class ProductRequest extends FormRequest
             'suppliers.*.supplier_id' => ['sometimes', 'exists:App\Models\Supplier,id'],
             'category_id' => ['sometimes', 'exists:App\Models\Category,id'],
             'cost' => ['required', 'numeric', 'gt:0'],
-            'is_paid' => ['sometimes', 'bool']
+            'is_paid' => ['sometimes', 'bool'],
+            'is_available' => ['sometimes', 'bool']
         ];
     }
 }

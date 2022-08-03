@@ -32,6 +32,7 @@ class ProductResource extends JsonResource
             'mainRef' => $this->mainRef,
             'cost' => $this->cost,
             'is_paid' => $this->is_paid,
+            'is_available' => $this->is_available,
             'suppliers' => ProductSuppliersResource::collection($this->suppliers),
             'category' => $this->category,
         ];

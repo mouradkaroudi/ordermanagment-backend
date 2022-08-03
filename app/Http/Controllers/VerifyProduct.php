@@ -30,6 +30,8 @@ class VerifyProduct extends Controller
             return response()->json(['message' => 'رقم الصنف غير موجود'], 422);
         } else if ($product->cost == 0) {
             return response()->json(['message' => 'المرجو تحديد تكلفة منتج قبل إضافته'], 422);
+        }else if ( $product->is_available == 0) {
+            return response()->json(['message' => 'المنتج غير متوفر'], 422);
         }
         
         return response('', 200);

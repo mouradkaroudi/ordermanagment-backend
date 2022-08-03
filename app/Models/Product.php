@@ -91,6 +91,13 @@ class Product extends Model
             }
         }
 
+        if (isset($filters['is_unavailable']) && !empty($filters['is_unavailable'])) {
+            $is_unavailable = filter_var($filters['is_unavailable'], FILTER_VALIDATE_BOOLEAN);
+            if ($is_unavailable) {
+                $query->where('is_available', '=', 0);
+            }
+        }
+
 
     }
 }
