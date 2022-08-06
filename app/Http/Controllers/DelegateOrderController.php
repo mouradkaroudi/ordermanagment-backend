@@ -6,6 +6,7 @@ use App\Http\Resources\DelegateOrderResource;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\Supplier;
+use Carbon\Carbon;
 
 class DelegateOrderController extends Controller
 {
@@ -19,7 +20,7 @@ class DelegateOrderController extends Controller
         $user_id = request()->user()->id;
         $request = request()->all();
         
-        $query = Order::filter($request)->where('delegate_id', $user_id)->whereIn('status',['sent', 'uncompleted_quantity'])->orderBy('updated_at', 'desc');
+        $query = Order::filter($request)->where('delegate_id', $user_id)->whereDate('created_at', Carbon::today())->whereIn('status',['sent', 'uncompleted_quantity'])->orderBy('updated_at', 'desc');
         $query = $query->get();
 
         return DelegateOrderResource::collection($query);
