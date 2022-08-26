@@ -17,7 +17,7 @@ class ProductListingIssueResource extends JsonResource
         return [
             'id' => $this->id,
             'issue' => $this->issue,
-            'product' => $this->product,
+            'product' => (new ProductResource($this->product)),
             'created_at' => $this->created_at ? date('Y-m-d H:i', strtotime($this->created_at)) : null,
             'resolved_at' => $this->resolved_at ? date('Y-m-d H:i', strtotime($this->resolved_at)) : null,
             'resolved_by' => $this->resolved_user,
