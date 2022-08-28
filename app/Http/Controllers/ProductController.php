@@ -72,6 +72,7 @@ class ProductController extends Controller
                     'message' => 'Products imported successfully.'
                 ], 200);
             } catch (\Throwable $th) {
+                throw $th;
                 return response()->json([
                     'message' => 'Something went wrong.'
                 ], 400);

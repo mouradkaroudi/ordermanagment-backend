@@ -49,11 +49,13 @@ class ProductsImport implements ToModel, WithUpserts
 
             }
 
-            $product = Product::where('ref', $row[1])->orWhere('sku', $row[0])->first();
-            if($product) {
-                $product->cost = $row[2];
-                $product->name = $row[4];
-                $product->save();
+            $product = Product::withTrashed()->where('ref', trim(strtolower($row[1])))->orWhere('sku', $row[0])->get()[0];
+            
+            if(!empty($product)) {
+                Product::where('id', $product->id)->update([
+                    'cost' => $row[2],
+                    'name' => $row[4]
+                ]);
             }else{
                 $product = Product::create($entries);
             }
