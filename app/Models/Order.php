@@ -79,12 +79,10 @@ class Order extends Model
             }
         }
 
-        if (!isset($filters['show']) || $filters['show'] === 'today') {
-            $query->whereDate('created_at', Carbon::today());
-        }
-
-        if(!isset($filters['show']) && isset($filters['date']) && !empty($filters['date'])) {
+        if(isset($filters['date']) && !empty($filters['date'])) {
             $query->whereDate('created_at', $filters['date']);
+        }else if(!isset($filters['show']) || $filters['show'] === 'today'){
+            $query->whereDate('created_at', Carbon::today());
         }
 
         if (isset($filters['supplier'])) {
