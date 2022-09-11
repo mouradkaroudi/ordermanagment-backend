@@ -83,6 +83,10 @@ class Order extends Model
             $query->whereDate('created_at', Carbon::today());
         }
 
+        if(!isset($filters['show']) && isset($filters['date']) && !empty($filters['date'])) {
+            $query->whereDate('created_at', $filters['date']);
+        }
+
         if (isset($filters['supplier'])) {
             
             $suppliers = Supplier::where('name', 'like', '%'. $filters['supplier'].'%')->pluck('id')->toArray();
